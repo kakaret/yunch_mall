@@ -1,5 +1,7 @@
 /src/test/
+#编译之后产生的目录或文件 不需要委托git管理
 *.class
 target/
 
+#需要委托git做版本控制的文件只有 .java/.yml/.xml/客户端网页等
 /.idea/
