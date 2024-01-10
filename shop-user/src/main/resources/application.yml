@@ -12,6 +12,10 @@ spring:
     username: root
     password: root
     type: com.alibaba.druid.pool.DruidDataSource
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
 
 # mybatis-plus配置
 mybatis-plus:
