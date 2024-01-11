@@ -16,7 +16,8 @@ public class ProductController {
     private ProductServiceImpl productService;
 
    @GetMapping("/{pid}")
-    public ProductTmp detail(@PathVariable("pid") int pid) {
+    public ProductTmp detail(@PathVariable("pid") int pid) throws InterruptedException {
+       Thread.sleep(100); //让每次请求线程都睡眠0.1s
         return productService.getById(pid);
     }
 }
