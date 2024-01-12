@@ -1,0 +1,1 @@
+[{"count":0.2,"grade":1,"limitApp":"default","minRequestAmount":10,"resource":"/order/m1","slowRatioThreshold":1.0,"statIntervalMs":1000,"timeWindow":5},{"count":100.0,"grade":0,"limitApp":"default","minRequestAmount":10,"resource":"/order/m1","slowRatioThreshold":0.3,"statIntervalMs":1000,"timeWindow":5}]

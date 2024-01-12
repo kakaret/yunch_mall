@@ -16,6 +16,11 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8080 #配置sentinel控制台的地址
+        port: 10000 #当前服务和sentinel-dashboard通信的端口
+      web-context-unify: false #禁止收敛Url的
 
 # mybatis-plus配置
 mybatis-plus:
@@ -24,3 +29,10 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   type-aliases-package: com.zrrd.yunchmall.pojo
   mapper-locations: classpath*:/mappers/**/*.xml
+
+
+#启用Feign客户端的Sentinel功能 实现当远程调用的服务不可用时执行默认的fallback方法
+#默认值为FALSE
+feign:
+  sentinel:
+    enabled: true

@@ -1,4 +1,4 @@
-package com.zrrd.yunchmall.order.service;
+package com.zrrd.yunchmall.order.service.client;
 
 import com.zrrd.yunchmall.pojo.UserTmp;
 import org.springframework.cloud.openfeign.FeignClient;

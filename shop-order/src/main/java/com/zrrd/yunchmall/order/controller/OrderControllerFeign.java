@@ -1,12 +1,13 @@
 package com.zrrd.yunchmall.order.controller;
 
 import com.zrrd.yunchmall.order.service.OrderServiceImpl;
-import com.zrrd.yunchmall.order.service.ProductServiceClient;
-import com.zrrd.yunchmall.order.service.UserServiceClient;
+import com.zrrd.yunchmall.order.service.client.ProductServiceClient;
+import com.zrrd.yunchmall.order.service.client.UserServiceClient;
 import com.zrrd.yunchmall.pojo.OrderTmp;
 import com.zrrd.yunchmall.pojo.ProductTmp;
 import com.zrrd.yunchmall.pojo.UserTmp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
