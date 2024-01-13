@@ -39,22 +39,22 @@ public class OrderController {
     public Map submitOrder(int uid, int pid, int count) {
 ////        一共有几个名字叫shop-product的同名服务
 //        final int N = discoveryClient.getInstances("shop-product").size();
-        final int N1 = discoveryClient.getInstances("shop-user").size();
+//        final int N1 = discoveryClient.getInstances("shop-user").size();
 ////        指定服务名称（shop-product） 获取服务实例（ServiceInstance）
 //        i = (i + 1) % N;
-        j = (j + 1) % N1;
+//        j = (j + 1) % N1;
 //        ServiceInstance instance = discoveryClient.getInstances("shop-product").get(i);
-        ServiceInstance instance2 = discoveryClient.getInstances("shop-user").get(j);
+//        ServiceInstance instance2 = discoveryClient.getInstances("shop-user").get(j);
 ////        获取服务实例（ServiceInstance）的host和port，拼接成http请求的url
 ////                                       127.0.0.1                      8071
 //        productServiceUrl = "http://" + instance.getHost() + ":" + instance.getPort();
-        userServiceUrl = "http://" + instance2.getHost() + ":" + instance2.getPort();
+//        userServiceUrl = "http://" + instance2.getHost() + ":" + instance2.getPort();
         String uri = "/product/" + pid;
         String uuri = "/user/" + uid;
 //        调用商品服务 查询商品信息
 
         productServiceUrl = "http://" + "shop-product";
-//        userServiceUrl = "http://" + "shop-user";
+        userServiceUrl = "http://" + "shop-user";
         ProductTmp productInfo = restTemplate.getForObject(productServiceUrl + uri, ProductTmp.class);
 //        判断库存是否充足
         if (productInfo.getStock() < count) {
