@@ -5,14 +5,14 @@ import org.springframework.stereotype.Controller;
 
 /**
  * <p>
- * 商品信息 前端控制器
+ * 存储产品参数信息的表 前端控制器
  * </p>
  *
  * @author JGX
  * @since 2024-01-15
  */
 @Controller
-@RequestMapping("/product/product")
-public class ProductController {
+@RequestMapping("/product/productAttributeValue")
+public class ProductAttributeValueController {
 
 }

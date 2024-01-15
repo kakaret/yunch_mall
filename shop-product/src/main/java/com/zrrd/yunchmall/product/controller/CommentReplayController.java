@@ -5,14 +5,14 @@ import org.springframework.stereotype.Controller;
 
 /**
  * <p>
- * 商品信息 前端控制器
+ * 产品评价回复表 前端控制器
  * </p>
  *
  * @author JGX
  * @since 2024-01-15
  */
 @Controller
-@RequestMapping("/product/product")
-public class ProductController {
+@RequestMapping("/product/commentReplay")
+public class CommentReplayController {
 
 }
