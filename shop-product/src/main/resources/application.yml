@@ -29,3 +29,8 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   type-aliases-package: com.zrrd.yunchmall.pojo
   mapper-locations: classpath*:/mappers/**/*.xml
+
+#关于swagger的基本设置
+swagger:
+  enabled: true
+  pathMapping:

@@ -15,7 +15,6 @@ import java.util.UUID;
  * 2.能偶解析Token令牌（解析成功Token有效 解析失败Token无效）
  */
 
-@SuppressWarnings("all")
 public class JwtUtil {
     private static String salt = "0103";
 

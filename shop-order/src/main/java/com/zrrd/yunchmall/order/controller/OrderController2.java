@@ -16,10 +16,10 @@ public class OrderController2 {
     private OrderServiceImpl orderService;
     @RequestMapping("/m1")
     public String m1() throws InterruptedException {
-        Random random = new Random();
-        if(random.nextInt(10000) % 4 == 0) { //25%
-            throw new RuntimeException("模拟程序出错了");
-        }
+//        Random random = new Random();
+//        if(random.nextInt(10000) % 4 == 0) { //25%
+//            throw new RuntimeException("模拟程序出错了");
+//        }
 //        if(random.nextBoolean()) {
 //            Thread.sleep(500);
 //        }

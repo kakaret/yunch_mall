@@ -1,8 +1,16 @@
 package com.zrrd.yunchmall.order.mapper;
 
+import com.zrrd.yunchmall.order.entity.Order;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.zrrd.yunchmall.pojo.OrderTmp;
 
-public interface OrderMapper extends BaseMapper<OrderTmp> {
+/**
+ * <p>
+ * 订单表 Mapper 接口
+ * </p>
+ *
+ * @author JGX
+ * @since 2024-01-15
+ */
+public interface OrderMapper extends BaseMapper<Order> {
 
 }

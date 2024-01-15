@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ServerWebExchange;
@@ -20,7 +21,7 @@ import java.util.List;
 //第一步 声明一个Filter类 实现GlobalFilter接口
 @Service //第三步 将这个类注入Spring的Bean容器
 @ConfigurationProperties("auth-filter") //从yml配置文件中将auth-filter属性的值注入到该类
-public class AuthGlobalFilter implements GlobalFilter {
+public class AuthGlobalFilter implements GlobalFilter, Ordered {
 //    不需要进行鉴权的请求路径集合 （excludes包括的路径直接执行）
     private List<String> excludes;
 
@@ -35,6 +36,12 @@ public class AuthGlobalFilter implements GlobalFilter {
     @Autowired
     private AuthServiceClient authService;
 
+//     保证我们自定义的过滤器位于整个过滤器链路的最前端
+    @Override
+    public int getOrder() {
+        return 1;
+    }
+
     //  第二步 重写filter方法
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -48,10 +55,10 @@ public class AuthGlobalFilter implements GlobalFilter {
 //        1.没有token 2.token过期了 3.token无效（被伪造）
         if(token == null || authService.auth(token) == null) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            exchange.getResponse().setComplete(); //响应结束 方法终止
+            return exchange.getResponse().setComplete(); //响应结束 方法终止
         } else {
             return chain.filter(exchange);
         }
-        return null;
     }
+
 }

@@ -36,3 +36,8 @@ mybatis-plus:
 feign:
   sentinel:
     enabled: true
+
+#关于swagger的基本设置
+swagger:
+  enabled: true
+  pathMapping:

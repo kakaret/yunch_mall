@@ -14,6 +14,9 @@
         <module>shop-order</module>
         <module>shop-product</module>
         <module>api-gateway</module>
+        <module>code-generator</module>
+        <module>shop-content</module>
+        <module>shop-sale</module>
     </modules>
 
     <!-- 定义本项目的父工程，统一一下springboot的版本 -->
