@@ -2,6 +2,7 @@ package com.zrrd.yunchmall.user.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
@@ -11,8 +12,11 @@ import org.springframework.stereotype.Controller;
  * @author JGX
  * @since 2024-01-15
  */
-@Controller
+@RestController
 @RequestMapping("/user/admin")
 public class AdminController {
-
+    @RequestMapping("/testSleuth")
+    public String testSleuth(){
+        return  "用户：测试链路追踪";
+    }
 }

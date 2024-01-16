@@ -24,6 +24,8 @@ import java.util.List;
 public class AuthGlobalFilter implements GlobalFilter, Ordered {
 //    不需要进行鉴权的请求路径集合 （excludes包括的路径直接执行）
     private List<String> excludes;
+//    设置一个基于配置文件的开关 如果是true 过滤器工作, false 过滤器关闭
+    private boolean enabled;
 
     public List<String> getExcludes() {
         return excludes;
@@ -45,6 +47,10 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     //  第二步 重写filter方法
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+
+//        当enabled==false 直接跳过当前过滤器
+        if(!enabled) return  chain.filter(exchange);
+
         String uri = exchange.getRequest().getURI().getPath();
 //        如果是包含在放行路径集合里的URI 直接通过鉴权环节
         if(excludes.contains(uri)) {

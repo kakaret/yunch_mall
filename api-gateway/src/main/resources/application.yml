@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: api-gateway
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/yunch_mall?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&useSSL=true
+    username: root
+    password: root
+    type: com.alibaba.druid.pool.DruidDataSource
     #开始配置网关的相关属性
   cloud:
     nacos:
@@ -33,6 +39,7 @@ spring:
 
 # 声明那些请求路径不需要鉴权
 auth-filter:
+  enabled: false #给过滤器加一个开关
   excludes:
     - /shop-user/user/login
     - /shop-order/order/m1

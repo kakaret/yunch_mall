@@ -12,6 +12,12 @@ spring:
     username: root
     password: root
     type: com.alibaba.druid.pool.DruidDataSource
+  zipkin:
+    base-url: http://127.0.0.1:9411/ #zipkin server的请求地址
+    discovery-client-enabled: false #让nacos把它当成一个URL，而不要当做服务名
+  sleuth:
+    sampler:
+      probability: 1.0 #采样的百分比
   cloud:
     nacos:
       discovery:
