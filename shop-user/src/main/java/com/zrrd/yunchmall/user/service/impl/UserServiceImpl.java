@@ -1,4 +1,4 @@
-package com.zrrd.yunchmall.user.service;
+package com.zrrd.yunchmall.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

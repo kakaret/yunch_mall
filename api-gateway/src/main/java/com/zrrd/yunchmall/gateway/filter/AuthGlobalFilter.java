@@ -49,7 +49,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
 //        当enabled==false 直接跳过当前过滤器
-        if(!enabled) return  chain.filter(exchange);
+        if(!enabled) return chain.filter(exchange);
 
         String uri = exchange.getRequest().getURI().getPath();
 //        如果是包含在放行路径集合里的URI 直接通过鉴权环节

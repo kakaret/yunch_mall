@@ -12,5 +12,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2024-01-15
  */
 public interface IAdminService extends IService<Admin> {
+    /**
+     * 管理员登录的业务方法
+     * @param username 用户名
+     * @param password 密码
+     * @return JWT生成的token
+     */
+    public String login(String username, String password);
 
 }

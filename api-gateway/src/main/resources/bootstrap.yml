@@ -1,13 +1,9 @@
-# 1.项目中的 bootstrap.yml
-# 2.去配置中心找到共享配置文件 all-service.yaml
-# 3.找当前服务名命名的配置文件 shop-product.yaml
-# 4.找 spring.profiles.active 对应的配置文件 shop-product-dev.yaml
 server:
-  port: 8061
+  port: 7000
 
 spring:
   application:
-    name: shop-user
+    name: api-gateway
   cloud:
     nacos:
       config:
@@ -15,4 +11,4 @@ spring:
         file-extension: yaml #配置文件的后缀名
         shared-configs: all-service.yaml #所有模块共享的统一配置文件
   profiles:
-    active: dev
+#    active:
