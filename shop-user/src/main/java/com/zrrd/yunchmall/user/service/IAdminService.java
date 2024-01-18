@@ -20,4 +20,10 @@ public interface IAdminService extends IService<Admin> {
      */
     public String login(String username, String password);
 
+    /**
+     * 向管理员对象中注入权限信息 角色列表和菜单列表
+     * @param admin
+     */
+    Admin setPermissionInfo(Admin admin);
+
 }

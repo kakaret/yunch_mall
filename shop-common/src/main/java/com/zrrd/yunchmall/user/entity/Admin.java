@@ -1,12 +1,16 @@
 package com.zrrd.yunchmall.user.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * <p>
@@ -18,6 +22,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @TableName("ums_admin")
 @ApiModel(value = "Admin对象", description = "后台用户表")
+@Data
 public class Admin implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -51,6 +56,18 @@ public class Admin implements Serializable {
 
     @ApiModelProperty("帐号启用状态：0->禁用；1->启用")
     private Integer status;
+
+    /**
+     * 封装当前管理员能够访问的菜单
+     */
+    @TableField(exist = false) // 用于映射数据表的非主键字段
+    private List<Menu> menus;
+
+    /**
+     * 封装当前管理员的全部角色
+     */
+    @TableField(exist = false)
+    private List<Role> roles;
 
     public Long getId() {
         return id;
