@@ -1,0 +1,18 @@
+# 1.项目中的 bootstrap.yml
+# 2.去配置中心找到共享配置文件 all-service.yaml
+# 3.找当前服务名命名的配置文件 shop-product.yaml
+# 4.找 spring.profiles.active 对应的配置文件 shop-product-dev.yaml
+server:
+  port: 8000
+
+spring:
+  application:
+    name: shop-oss
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848 #Nacos配置中心的地址
+        file-extension: yaml #配置文件的后缀名
+        shared-configs: all-service.yaml #所有模块共享的统一配置文件
+  profiles:
+#    active: dev

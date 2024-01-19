@@ -1,11 +1,17 @@
 package com.zrrd.yunchmall.product.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -17,6 +23,9 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @TableName("pms_product_category")
 @ApiModel(value = "ProductCategory对象", description = "产品分类")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductCategory implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -56,6 +65,9 @@ public class ProductCategory implements Serializable {
 
     @ApiModelProperty("描述")
     private String description;
+
+    @TableField(exist = false)
+    private List<ProductCategory> children;
 
     public Long getId() {
         return id;

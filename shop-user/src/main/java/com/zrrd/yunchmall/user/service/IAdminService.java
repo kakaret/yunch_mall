@@ -2,6 +2,9 @@ package com.zrrd.yunchmall.user.service;
 
 import com.zrrd.yunchmall.user.entity.Admin;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zrrd.yunchmall.user.entity.Role;
+
+import java.util.List;
 
 /**
  * <p>
@@ -26,4 +29,17 @@ public interface IAdminService extends IService<Admin> {
      */
     Admin setPermissionInfo(Admin admin);
 
+    /**
+     * 返回管理员所拥有的角色列表
+     * @param id 管理员Id
+     * @return
+     */
+    List<Role> getRoleListByAdminId(long id);
+
+    /**
+     * 给管理员分配新的角色
+     * @param adminId 管理员Id
+     * @param roleIds 角色列表：id1、 id2、 id3
+     */
+    void allocRole(long adminId, String roleIds);
 }

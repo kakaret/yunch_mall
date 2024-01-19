@@ -1,12 +1,16 @@
 package com.zrrd.yunchmall.user.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -18,6 +22,9 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @TableName("ums_menu")
 @ApiModel(value = "Menu对象", description = "后台菜单表")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Menu implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -29,6 +36,8 @@ public class Menu implements Serializable {
     private Long parentId;
 
     @ApiModelProperty("创建时间")
+//    fill = FieldFill.INSERT 表示在插入这条记录前这个属性的值会被自动填充
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @ApiModelProperty("菜单名称")
@@ -48,6 +57,10 @@ public class Menu implements Serializable {
 
     @ApiModelProperty("前端隐藏")
     private Integer hidden;
+
+//    封装当前菜单的子菜单
+    @TableField(exist = false)
+    private List<Menu> children;
 
     public Long getId() {
         return id;

@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -17,6 +19,8 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @TableName("ums_admin_role_relation")
 @ApiModel(value = "AdminRoleRelation对象", description = "后台用户和角色关系表")
+@NoArgsConstructor
+@AllArgsConstructor
 public class AdminRoleRelation implements Serializable {
 
     private static final long serialVersionUID = 1L;

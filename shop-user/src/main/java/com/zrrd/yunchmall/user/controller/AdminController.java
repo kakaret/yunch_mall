@@ -5,20 +5,20 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zrrd.yunchmall.user.entity.Admin;
+import com.zrrd.yunchmall.user.entity.Role;
 import com.zrrd.yunchmall.user.service.IAdminService;
 import com.zrrd.yunchmall.user.util.JwtUtil;
 import com.zrrd.yunchmall.util.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -116,6 +116,30 @@ public class AdminController {
     public  ResponseResult delete(@PathVariable("id") long id) {
         adminService.removeById(id);
         return new ResponseResult(200, "删除成功");
+    }
+
+    @ApiOperation(value = "修改管理员状态", httpMethod = "POST")
+    @RequestMapping("/updateStatus/{id}")
+    public ResponseResult updateStatus(@PathVariable("id") long id, @RequestParam("status") int status) {
+        UpdateWrapper<Admin> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id);
+        updateWrapper.set("status", status);
+        adminService.update(updateWrapper);
+        return new ResponseResult<>(200, "修改成功");
+    }
+
+    @ApiOperation(value = "查询管理员现有角色", httpMethod = "GET")
+    @RequestMapping("/role/{id}")
+    public ResponseResult role(@PathVariable("id") long id) {
+        List<Role> roles = adminService.getRoleListByAdminId(id);
+        return new ResponseResult(200, "查询成功", roles);
+    }
+
+    @ApiOperation(value = "分配管理员角色", httpMethod = "POST")
+    @RequestMapping("/role/update")
+    public ResponseResult allocRole(@RequestParam long adminId, @RequestParam String roleIds) {
+        adminService.allocRole(adminId, roleIds);
+        return new ResponseResult(200, "修改成功");
     }
 
     @RequestMapping("/testSleuth")
