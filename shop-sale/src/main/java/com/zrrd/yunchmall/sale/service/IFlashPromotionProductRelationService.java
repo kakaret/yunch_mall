@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * 商品限时购与商品关系表 服务类
  * </p>
  *
- * @author JGX
+ * @author LiuLuSheng
  * @since 2024-01-15
  */
 public interface IFlashPromotionProductRelationService extends IService<FlashPromotionProductRelation> {

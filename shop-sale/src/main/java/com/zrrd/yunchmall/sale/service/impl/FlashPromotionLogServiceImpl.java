@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
  * 限时购通知记录 服务实现类
  * </p>
  *
- * @author JGX
+ * @author LiuLuSheng
  * @since 2024-01-15
  */
 @Service
