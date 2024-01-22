@@ -41,4 +41,13 @@ public class PrefrenceAreaProductRelationController {
         queryWrapper.eq("product_id", id);
         return new ResponseResult(200, "查询成功", service.list(queryWrapper));
     }
+
+    @ApiOperation("通过商品id删除关系")
+    @GetMapping("/delete/{id}")
+    public ResponseResult deleteSPR(@PathVariable("id") long id) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("product_id", id);
+        service.remove(queryWrapper);
+        return new ResponseResult(200, "删除成功");
+    }
 }
