@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * 优惠券和产品分类关系表 服务类
  * </p>
  *
- * @author JGX
+ * @author LiuLuSheng
  * @since 2024-01-15
  */
 public interface ICouponProductCategoryRelationService extends IService<CouponProductCategoryRelation> {

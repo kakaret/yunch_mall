@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
  * 商品限时购与商品关系表 前端控制器
  * </p>
  *
- * @author JGX
+ * @author LiuLuSheng
  * @since 2024-01-15
  */
 @Controller
