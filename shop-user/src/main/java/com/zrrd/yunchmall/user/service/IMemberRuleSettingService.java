@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * 会员积分成长规则表 服务类
  * </p>
  *
- * @author JGX
+ * @author LiYe
  * @since 2024-01-15
  */
 public interface IMemberRuleSettingService extends IService<MemberRuleSetting> {

@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * 会员积分成长规则表 Mapper 接口
  * </p>
  *
- * @author JGX
+ * @author LiYe
  * @since 2024-01-15
  */
 public interface MemberRuleSettingMapper extends BaseMapper<MemberRuleSetting> {

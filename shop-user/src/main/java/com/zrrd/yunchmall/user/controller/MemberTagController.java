@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
  * 用户标签表 前端控制器
  * </p>
  *
- * @author JGX
+ * @author LiYe
  * @since 2024-01-15
  */
 @Controller

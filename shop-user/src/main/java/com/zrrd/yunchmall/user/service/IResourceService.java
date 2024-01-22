@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * 后台资源表 服务类
  * </p>
  *
- * @author JGX
+ * @author LiYe
  * @since 2024-01-15
  */
 public interface IResourceService extends IService<Resource> {
