@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * 限时购场次表 Mapper 接口
  * </p>
  *
- * @author JGX
+ * @author LiuLuSheng
  * @since 2024-01-15
  */
 public interface FlashPromotionSessionMapper extends BaseMapper<FlashPromotionSession> {
