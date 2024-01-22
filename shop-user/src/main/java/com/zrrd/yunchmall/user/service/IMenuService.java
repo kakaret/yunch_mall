@@ -10,10 +10,15 @@ import java.util.List;
  * 后台菜单表 服务类
  * </p>
  *
- * @author JGX
+ * @author LiYe
  * @since 2024-01-15
  */
 public interface IMenuService extends IService<Menu> {
 
+    /**
+     * 返回菜单树
+     * @return
+     * */
     List<Menu> getTreeList();
+
 }

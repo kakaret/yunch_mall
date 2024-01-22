@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
  * 会员表 服务实现类
  * </p>
  *
- * @author JGX
+ * @author LiYe
  * @since 2024-01-15
  */
 @Service

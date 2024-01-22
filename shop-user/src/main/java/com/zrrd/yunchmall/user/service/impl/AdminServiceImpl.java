@@ -26,83 +26,83 @@ import java.util.List;
  * 后台用户表 服务实现类
  * </p>
  *
- * @author JGX
+ * @author LiYe
  * @since 2024-01-15
  */
 @Service
+@SuppressWarnings("all")
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements IAdminService {
 
     @Autowired
-    private RoleMapper roleMapper; // 在显示无法自动注入依赖的Mapper接口上添加 @Repository 或 @Mapper 注解
-
+    private MenuMapper menuMapper;//在显示无法自动注入依赖的Mapper接口上添加@Mapper或@Repository
     @Autowired
-    private MenuMapper menuMapper;
-
+    private RoleMapper roleMapper;
     @Autowired
-    private AdminRoleRelationMapper adminRoleRelationMapper;
+    private AdminRoleRelationMapper roleRelationMapper;
 
     @Override
     public String login(String username, String password) {
         QueryWrapper queryWrapper = new QueryWrapper();
+        //where username=？ and status=？
         queryWrapper.eq("username", username);
-//        状态为0 表示无法登录
-        queryWrapper.eq("status", 1);
-//        select uid,username,password...from t_user where username=#{param}
+        //状态为0表示无法登录
+        queryWrapper.eq("status",1);
+        // select uid, username, password... from t_user where username=?
         Admin admin = getOne(queryWrapper);
-        if(admin != null) {
-//            检查密码是否正确
-            if(BCrypt.checkpw(password, admin.getPassword())) {
+        // userTmp == null 说明用户名不存在
+        if (admin != null) {
+            //检查密码是否正确
+            if (BCrypt.checkpw(password, admin.getPassword())) {
+                //更新这个管理员账号的最后登录时间
                 admin.setLoginTime(LocalDateTime.now());
+                // update ums_admin set login_time = ? where id =?
                 UpdateWrapper updateWrapper = new UpdateWrapper();
                 updateWrapper.set("login_time", admin.getLoginTime());
-                updateWrapper.eq("id", admin.getId());
+                updateWrapper.eq("id",admin.getId());
                 super.update(updateWrapper);
+
                 return JwtUtil.create(24 * 30 * 60 * 1000, admin);
 //                return userTmp;
             }
         }
-        return null; //用户名或密码错误 返回空
+        //用户名或密码错误则返回null
+        return null;
     }
 
-    /**
-     * 注入管理员的角色和菜单列表
-     * @param admin
-     * @return
-     */
     @Override
     public Admin setPermissionInfo(Admin admin) {
-        admin = getById(admin.getId());
-//        注入角色列表
+        admin =super.getById(admin.getId());
+        // 注入角色列表
         admin.setRoles(roleMapper.selectRolesByAdminId(admin.getId()));
-//        注入菜单列表
-        admin.setMenus(menuMapper.selectMenusByAdminId(admin.getId(), 1));
-
+        // 注入菜单列表
+        admin.setMenus(menuMapper.selectMenusByAdminId(admin.getId(),1));
         return admin;
     }
 
     @Override
-    public List<Role> getRoleListByAdminId(long id) {
+    public List<Role> getRoleList(long id) {
         return roleMapper.selectRolesByAdminId(id);
     }
 
     @Override
     @Transactional //保证这个业务方法里的所有数据库操作都在同一个事务中完成
     public void allocRole(long adminId, String roleIds) {
-//        1.移除它原来的角色
+        //注入mapper，在上面
+        //1.先移除原来的角色
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("admin_id", adminId);
-//        delete from ums_admin_role_relation where admin_id = ?
-        adminRoleRelationMapper.delete(queryWrapper);
-//        2.分配当前全部角色
-        if(!StringUtils.isEmpty(roleIds)) {
+        queryWrapper.eq("admin_id",adminId);
+        // delete from ums_admin_role_relation where admin_id=? 生成sql语句用了 动态代理 设计模式
+        roleRelationMapper.delete(queryWrapper);
+        //2.分配当前全部角色
+        if (!StringUtils.isEmpty(roleIds)) {
             for (String roleId : roleIds.split(",")) {
-                AdminRoleRelation adminRoleRelation = new AdminRoleRelation();
-                adminRoleRelation.setAdminId(adminId);
-                adminRoleRelation.setRoleId(Long.valueOf(roleId));
-                adminRoleRelationMapper.insert(adminRoleRelation); //将封装的relation对象添加到数据库表中
+                AdminRoleRelation relation = new AdminRoleRelation();//封装relation对象
+                relation.setAdminId(adminId);
+                relation.setRoleId(Long.valueOf(roleId));
+                roleRelationMapper.insert(relation);//添加这个relation
             }
         }
-//        3.将1和2置于一个事务当中
-    }
+        //3.将1和2置于一个事务当中
 
+    }
 }

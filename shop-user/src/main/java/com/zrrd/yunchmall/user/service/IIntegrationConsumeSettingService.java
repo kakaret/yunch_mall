@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * 积分消费设置 服务类
  * </p>
  *
- * @author JGX
+ * @author LiYe
  * @since 2024-01-15
  */
 public interface IIntegrationConsumeSettingService extends IService<IntegrationConsumeSetting> {

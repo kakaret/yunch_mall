@@ -11,35 +11,36 @@ import java.util.List;
  * 后台用户表 服务类
  * </p>
  *
- * @author JGX
+ * @author LiYe
  * @since 2024-01-15
  */
 public interface IAdminService extends IService<Admin> {
     /**
      * 管理员登录的业务方法
-     * @param username 用户名
+     * @param username 用户名（登录名）
      * @param password 密码
-     * @return JWT生成的token
+     * @return JWT生成的 token
      */
-    public String login(String username, String password);
+    String login(String username,String password);
 
     /**
-     * 向管理员对象中注入权限信息 角色列表和菜单列表
+     * 向管理员对象中注入权限信息，角色列表和菜单列表
      * @param admin
-     */
+     * @return*/
     Admin setPermissionInfo(Admin admin);
 
-    /**
-     * 返回管理员所拥有的角色列表
-     * @param id 管理员Id
-     * @return
-     */
-    List<Role> getRoleListByAdminId(long id);
+     /**
+      * 返回管理员所拥有的角色列表
+      * @param id 管理员ID
+      * @return
+      * */
+    List<Role> getRoleList(long id);
 
     /**
      * 给管理员分配新的角色
-     * @param adminId 管理员Id
-     * @param roleIds 角色列表：id1、 id2、 id3
-     */
+     * @param adminId 管理员id
+     * @param roleIds 角色列表：id1，id2，id3
+     *
+     * */
     void allocRole(long adminId, String roleIds);
 }

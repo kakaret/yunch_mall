@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @MapperScan("com.zrrd.yunchmall.user.mapper")
+//开启服务注册及发现
 @EnableDiscoveryClient
 @ComponentScan("com.zrrd.yunchmall")
 public class UserApp {

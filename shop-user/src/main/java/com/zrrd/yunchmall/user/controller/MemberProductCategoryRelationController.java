@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
  * 会员与产品分类关系表（用户喜欢的分类） 前端控制器
  * </p>
  *
- * @author JGX
+ * @author LiYe
  * @since 2024-01-15
  */
 @Controller
