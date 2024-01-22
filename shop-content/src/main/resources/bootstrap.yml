@@ -3,12 +3,11 @@
 # 3.找当前服务名命名的配置文件 shop-product.yaml
 # 4.找 spring.profiles.active 对应的配置文件 shop-product-dev.yaml
 server:
-  port: 8000
-  address: 127.0.0.1
+  port: 8091
 
 spring:
   application:
-    name: shop-oss
+    name: shop-content
   cloud:
     nacos:
       config:

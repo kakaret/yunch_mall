@@ -7,6 +7,7 @@ import io.minio.errors.*;
 import lombok.Cleanup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,10 +18,14 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 //提供文件上传服务的控制器
 @RestController
+//处理跨域服务文件上传
+@CrossOrigin("*")
 public class UploadController {
     @Autowired
     private MinioProperties minioProperties;
@@ -44,7 +49,7 @@ public class UploadController {
     }
 
     @PostMapping("/minio/upload")
-    public String upload(MultipartFile file) throws ServerException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public ResponseResult upload(MultipartFile file) throws ServerException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         // 火影忍者——第二集.mp4 上传文件的原始文件名
         String originalFilename = file.getOriginalFilename();
         // 但是上传到服务器上的文件名需要是唯一的，如何保证唯一性？ /日期/UUID.后缀
@@ -70,7 +75,10 @@ public class UploadController {
         in.close();//关闭输入流
         System.out.println("上传成功");
         String host = "http://" + address + ":" + port;
-        return host + "/resource/" + filename;//返回最终的资源路径
+        Map data = new HashMap();
+        data.put("url", host + "/resource/" + filename);
+        return new ResponseResult<>(200, "上传成功", data);
+//        return host + "/resource/" + filename;//返回最终的资源路径
     }
 
 }

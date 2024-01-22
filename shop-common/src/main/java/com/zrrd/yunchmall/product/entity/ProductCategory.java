@@ -67,6 +67,9 @@ public class ProductCategory implements Serializable {
     private String description;
 
     @TableField(exist = false)
+    private List<Long> productAttributeIdList;
+
+    @TableField(exist = false)
     private List<ProductCategory> children;
 
     public Long getId() {

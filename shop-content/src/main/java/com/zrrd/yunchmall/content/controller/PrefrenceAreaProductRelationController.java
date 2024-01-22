@@ -1,7 +1,15 @@
 package com.zrrd.yunchmall.content.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.stereotype.Controller;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zrrd.yunchmall.content.entity.PrefrenceAreaProductRelation;
+import com.zrrd.yunchmall.content.service.IPrefrenceAreaProductRelationService;
+import com.zrrd.yunchmall.util.ResponseResult;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -11,8 +19,26 @@ import org.springframework.stereotype.Controller;
  * @author JGX
  * @since 2024-01-15
  */
-@Controller
-@RequestMapping("/content/prefrenceAreaProductRelation")
+@RestController
+@RequestMapping("/prefrenceAreaProductRelation")
+@Api(tags = "内容服务-用户喜好和商品关系模块")
 public class PrefrenceAreaProductRelationController {
 
+    @Autowired
+    private IPrefrenceAreaProductRelationService service;
+
+    @ApiOperation("添加喜好商品关系")
+    @PostMapping("/create")
+    public ResponseResult createPrefrenceAreaRelation(@RequestBody List<PrefrenceAreaProductRelation> list) {
+        service.saveBatch(list);
+        return new ResponseResult(200, "添加成功");
+    }
+
+    @ApiOperation("通过商品id查询关系")
+    @GetMapping("/list/{id}")
+    public ResponseResult list(@PathVariable("id") long id) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("product_id", id);
+        return new ResponseResult(200, "查询成功", service.list(queryWrapper));
+    }
 }

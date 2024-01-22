@@ -2,7 +2,6 @@ package com.zrrd.yunchmall.product.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zrrd.yunchmall.product.entity.Product;
 import com.zrrd.yunchmall.product.service.IProductService;
@@ -43,15 +42,15 @@ public class ProductController {
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
         if (!StringUtils.isEmpty(keyword))
             queryWrapper.like("name", keyword);
-        if(publishStatus != null)
+        if (publishStatus != null)
             queryWrapper.like("publish_status", publishStatus);
-        if(verifyStatus != null)
+        if (verifyStatus != null)
             queryWrapper.like("verify_status", verifyStatus);
-        if(!StringUtils.isEmpty(productSn))
+        if (!StringUtils.isEmpty(productSn))
             queryWrapper.like("product_sn", productSn);
-        if(productCategoryId != null)
+        if (productCategoryId != null)
             queryWrapper.like("product_category_id", productCategoryId);
-        if(brandId != null)
+        if (brandId != null)
             queryWrapper.like("brand_id", brandId);
         return new ResponseResult<>(200, "查询成功", productService.page(new Page<>(pageNum, pageSize), queryWrapper));
 
@@ -80,6 +79,46 @@ public class ProductController {
         return new ResponseResult<>(200, "修改成功");
     }
 
+    @ApiOperation("设为/取消推荐")
+    @PostMapping("/update/recommendStatus")
+    public ResponseResult updateRecommendStatus(@RequestParam @ApiParam("要修改的状态") int recommendStatus, @RequestParam @ApiParam("批量操作的Id") String ids) {
+        UpdateWrapper<Product> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.set("recommand_status", recommendStatus);
+        updateWrapper.in("id", ids.split(","));
+        productService.update(updateWrapper);
+        return new ResponseResult(200, "修改成功");
+    }
+
+    @ApiOperation("设为/取消新品")
+    @PostMapping("/update/newStatus")
+    public ResponseResult updateNewStatus(@RequestParam @ApiParam("要修改的状态") int newStatus, @RequestParam @ApiParam("批量操作的Id") String ids) {
+        UpdateWrapper<Product> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.set("new_status", newStatus);
+        updateWrapper.in("id", ids.split(","));
+        productService.update(updateWrapper);
+        return new ResponseResult(200, "修改成功");
+    }
+
+
+    @ApiOperation("新增商品信息")
+    @PostMapping("/create")
+    public ResponseResult create(@RequestBody Product product) {
+        productService.save(product);
+        return new ResponseResult(200, "新增商品成功");
+    }
+
+    @ApiOperation("查询单个要修改的商品信息")
+    @GetMapping("/updateInfo/{id}")
+    public ResponseResult updateInfo(@PathVariable("id") long id) {
+        return new ResponseResult(200, "查询成功", productService.getById(id));
+    }
+
+    @ApiOperation("修改商品信息")
+    @PostMapping("/update/{id}")
+    public ResponseResult update(@PathVariable("id") long id, @RequestBody Product product) {
+        productService.updateById(product);
+        return new ResponseResult(200, "更新成功");
+    }
 
     @RequestMapping("/testSleuth")
     public String testSleuth() {

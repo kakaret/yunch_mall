@@ -1,13 +1,21 @@
 package com.zrrd.yunchmall.product.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.zrrd.yunchmall.content.entity.PrefrenceAreaProductRelation;
+import com.zrrd.yunchmall.content.entity.SubjectProductRelation;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -19,6 +27,9 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @TableName("pms_product")
 @ApiModel(value = "Product对象", description = "商品信息")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -148,6 +159,34 @@ public class Product implements Serializable {
 
     @ApiModelProperty("商品分类名称")
     private String productCategoryName;
+
+//    商品会员价格
+    @TableField(exist = false)
+    private List<MemberPrice> memberPriceList;
+
+//    商品满减价格
+    @TableField(exist = false)
+    private List<ProductFullReduction> productFullReductionList;
+
+//    上品折扣价格
+    @TableField(exist = false)
+    private List<ProductLadder> productLadderList;
+
+//    商品属性值
+    @TableField(exist = false)
+    private List<ProductAttributeValue> productAttributeValueList;
+
+//    商品SKU库存
+    @TableField(exist = false)
+    private List<SkuStock> skuStockList;
+
+//    会员喜好与商品关系列表
+    @TableField(exist = false)
+    private List<PrefrenceAreaProductRelation> prefrenceAreaProductRelationList;
+
+//    专题商品关系列表
+    @TableField(exist = false)
+    private List<SubjectProductRelation> subjectProductRelationList;
 
     public Long getId() {
         return id;

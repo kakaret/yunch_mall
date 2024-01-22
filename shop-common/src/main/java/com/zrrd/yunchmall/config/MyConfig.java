@@ -18,11 +18,4 @@ public class MyConfig {
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         return interceptor;
     }
-
-    // 向容器中注入一个RestTemplate实例，用于在服务之间进行远程调用
-    @Bean
-    @LoadBalanced // Ribbon负载均衡器的注解
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 }
