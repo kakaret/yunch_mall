@@ -3,6 +3,9 @@ package com.zrrd.yunchmall.sale.service;
 import com.zrrd.yunchmall.sale.entity.FlashPromotionSession;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 限时购场次表 服务类
@@ -26,4 +29,7 @@ public interface IFlashPromotionSessionService extends IService<FlashPromotionSe
      * @param id 编号
      */
     void updateList(FlashPromotionSession flashPromotionSession, long id);
+
+
+    List<Map> selectProductList(long flashPromotionId);
 }

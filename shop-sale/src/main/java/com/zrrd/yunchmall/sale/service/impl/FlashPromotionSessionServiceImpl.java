@@ -5,7 +5,11 @@ import com.zrrd.yunchmall.sale.entity.FlashPromotionSession;
 import com.zrrd.yunchmall.sale.mapper.FlashPromotionSessionMapper;
 import com.zrrd.yunchmall.sale.service.IFlashPromotionSessionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -16,11 +20,16 @@ import org.springframework.stereotype.Service;
  * @since 2024-01-15
  */
 @Service
+@SuppressWarnings("all")
 public class FlashPromotionSessionServiceImpl extends ServiceImpl<FlashPromotionSessionMapper, FlashPromotionSession> implements IFlashPromotionSessionService {
+
+    @Autowired
+    private FlashPromotionSessionMapper flashPromotionSessionMapper;
 
     /**
      * 修改秒杀时间段列表状态
-     * @param id 编号
+     *
+     * @param id     编号
      * @param status 启用状态
      */
     @Override
@@ -32,13 +41,19 @@ public class FlashPromotionSessionServiceImpl extends ServiceImpl<FlashPromotion
 
     /**
      * 修改秒杀时间段列表
+     *
      * @param flashPromotionSession 秒杀时间段列表
-     * @param id 编号
+     * @param id                    编号
      */
     @Override
     public void updateList(FlashPromotionSession flashPromotionSession, long id) {
         UpdateWrapper updateWrapper = new UpdateWrapper();
-        updateWrapper.eq("id",id);
-        baseMapper.update(flashPromotionSession,updateWrapper);
+        updateWrapper.eq("id", id);
+        baseMapper.update(flashPromotionSession, updateWrapper);
+    }
+
+    @Override
+    public List<Map> selectProductList(long flashPromotionId) {
+        return flashPromotionSessionMapper.selectProductList(flashPromotionId);
     }
 }
