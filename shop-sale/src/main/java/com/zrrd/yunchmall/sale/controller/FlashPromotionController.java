@@ -63,4 +63,5 @@ public class FlashPromotionController {
         flashService.removeById(id);
         return new ResponseResult(200,"删除成功");
     }
+
 }

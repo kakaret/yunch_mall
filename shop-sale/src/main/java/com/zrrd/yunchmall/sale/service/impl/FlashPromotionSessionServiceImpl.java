@@ -5,7 +5,12 @@ import com.zrrd.yunchmall.sale.entity.FlashPromotionSession;
 import com.zrrd.yunchmall.sale.mapper.FlashPromotionSessionMapper;
 import com.zrrd.yunchmall.sale.service.IFlashPromotionSessionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -17,6 +22,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FlashPromotionSessionServiceImpl extends ServiceImpl<FlashPromotionSessionMapper, FlashPromotionSession> implements IFlashPromotionSessionService {
+
+    @Autowired
+    private FlashPromotionSessionMapper flashPromotionSessionMapper;
 
     /**
      * 修改秒杀时间段列表状态
@@ -41,4 +49,10 @@ public class FlashPromotionSessionServiceImpl extends ServiceImpl<FlashPromotion
         updateWrapper.eq("id",id);
         baseMapper.update(flashPromotionSession,updateWrapper);
     }
+
+    @Override
+    public List<Map> selectFlashList(long flashPromotionId) {
+        return flashPromotionSessionMapper.selectFlashList(flashPromotionId);
+    }
+
 }

@@ -1,7 +1,12 @@
 package com.zrrd.yunchmall.sale.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.zrrd.yunchmall.sale.entity.FlashPromotion;
+import com.zrrd.yunchmall.sale.entity.FlashPromotionProductRelation;
 import com.zrrd.yunchmall.sale.entity.FlashPromotionSession;
+import com.zrrd.yunchmall.sale.service.IFlashPromotionProductRelationService;
+import com.zrrd.yunchmall.sale.service.IFlashPromotionService;
 import com.zrrd.yunchmall.sale.service.IFlashPromotionSessionService;
 import com.zrrd.yunchmall.util.ResponseResult;
 import io.swagger.annotations.Api;
@@ -10,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -26,6 +34,12 @@ import java.util.List;
 public class FlashPromotionSessionController {
     @Autowired
     private IFlashPromotionSessionService flashPromotionSessionService;
+
+    @Autowired
+    private IFlashPromotionProductRelationService productRelationService;
+
+    @Autowired
+    private IFlashPromotionService flashPromotionService;
     @ApiOperation("查询")
     @GetMapping("/list")
     public ResponseResult list() {
@@ -59,5 +73,12 @@ public class FlashPromotionSessionController {
     public ResponseResult deleteList(@PathVariable long id){
         flashPromotionSessionService.removeById(id);
         return new ResponseResult(200,"删除成功");
+    }
+
+
+    @ApiOperation("查询单个活动")
+    @GetMapping("/selectList")
+    public ResponseResult selectList(long flashPromotionId) {
+        return new ResponseResult(200, "查询成功", flashPromotionSessionService.selectFlashList(flashPromotionId));
     }
 }
