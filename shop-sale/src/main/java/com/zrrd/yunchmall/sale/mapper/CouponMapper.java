@@ -2,6 +2,7 @@ package com.zrrd.yunchmall.sale.mapper;
 
 import com.zrrd.yunchmall.sale.entity.Coupon;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import net.sf.jsqlparser.statement.merge.Merge;
 
 /**
  * <p>

@@ -206,12 +206,15 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         skuStockService.saveBatch(skuStockList);
 
 //        8.保存商品关联专题信息（专题商品关系）
+        contentService.deleteSPR(id);
         List<SubjectProductRelation> subjectProductRelationList = product.getSubjectProductRelationList();
         subjectProductRelationList.forEach(item -> {
             item.setProductId(product.getId());
         });
         contentService.createSPR(subjectProductRelationList);
 //        9.保存商品关联优选信息（用户喜好商品关系）
+
+        contentService.deleteAPR(id);
         List<PrefrenceAreaProductRelation> prefrenceAreaProductRelationList = product.getPrefrenceAreaProductRelationList();
         prefrenceAreaProductRelationList.forEach(item -> {
             item.setProductId(product.getId());
