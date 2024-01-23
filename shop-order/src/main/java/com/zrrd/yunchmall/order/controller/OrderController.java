@@ -41,16 +41,6 @@ public class OrderController {
     @Autowired
     IOrderService orderService;
 
-    /**
-     * pageNum: 1
-     * pageSize: 10
-     * orderSn: 1
-     * receiverKeyword: 1
-     * status: 0
-     * orderType: 0
-     * sourceType: 0
-     * createTime: 2024-01-01
-     */
     @ApiOperation("查询订单列表")
     @GetMapping("/list")
     public ResponseResult list(@RequestParam int pageNum, @RequestParam int pageSize,
