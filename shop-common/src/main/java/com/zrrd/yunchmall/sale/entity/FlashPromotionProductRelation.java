@@ -1,12 +1,16 @@
 package com.zrrd.yunchmall.sale.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
+
+import com.zrrd.yunchmall.product.entity.Product;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * <p>
@@ -18,6 +22,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @TableName("sms_flash_promotion_product_relation")
 @ApiModel(value = "FlashPromotionProductRelation对象", description = "商品限时购与商品关系表")
+@Data
 public class FlashPromotionProductRelation implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -46,6 +51,9 @@ public class FlashPromotionProductRelation implements Serializable {
 
     @ApiModelProperty("排序")
     private Integer sort;
+
+    @TableField(exist = false)
+    private Product product;
 
     public Long getId() {
         return id;
