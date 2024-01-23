@@ -30,5 +30,6 @@ public interface IFlashPromotionSessionService extends IService<FlashPromotionSe
      */
     void updateList(FlashPromotionSession flashPromotionSession, long id);
 
-    List<Map> selectFlashList(long flashPromotionId);
+
+    List<Map> selectProductList(long flashPromotionId);
 }

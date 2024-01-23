@@ -25,7 +25,7 @@ import org.springframework.stereotype.Controller;
  */
 @RestController
 @RequestMapping("/flash")
-@Api("营销服务-秒杀活动列表")
+@Api(tags = "营销服务-秒杀活动列表")
 public class FlashPromotionController {
     @Autowired
     private IFlashPromotionService flashService;
@@ -63,5 +63,4 @@ public class FlashPromotionController {
         flashService.removeById(id);
         return new ResponseResult(200,"删除成功");
     }
-
 }

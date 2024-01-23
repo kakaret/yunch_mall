@@ -42,7 +42,7 @@ public class HomeAdvertiseServiceImpl extends ServiceImpl<HomeAdvertiseMapper, H
             queryWrapper.like("type", type);
         }
         if (endTime != null) {
-            queryWrapper.like("end_time", endTime);
+            queryWrapper.eq("end_time", endTime);
         }
         return page(page, queryWrapper);
     }
