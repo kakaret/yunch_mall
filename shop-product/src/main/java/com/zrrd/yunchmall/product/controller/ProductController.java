@@ -120,6 +120,16 @@ public class ProductController {
         return new ResponseResult(200, "更新成功");
     }
 
+    @ApiOperation("通过商品名称或商品货号查询商品信息")
+    @GetMapping("/simpleList")
+    public ResponseResult simpleList(String keyword) {
+        QueryWrapper<Product> queryWrapper = new QueryWrapper();
+        if (!StringUtils.isEmpty(keyword)) {
+            queryWrapper.like("name", keyword).or().like("product_sn", keyword);
+        }
+        return new ResponseResult(200, "查询成功", productService.list(queryWrapper));
+    }
+
     @RequestMapping("/testSleuth")
     public String testSleuth() {
         return "商品：测试链路追踪";

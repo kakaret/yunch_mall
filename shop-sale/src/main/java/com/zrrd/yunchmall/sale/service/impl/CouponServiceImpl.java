@@ -4,11 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zrrd.yunchmall.sale.entity.Coupon;
+import com.zrrd.yunchmall.sale.entity.CouponProductCategoryRelation;
+import com.zrrd.yunchmall.sale.entity.CouponProductRelation;
 import com.zrrd.yunchmall.sale.mapper.CouponMapper;
+import com.zrrd.yunchmall.sale.service.ICouponProductCategoryRelationService;
+import com.zrrd.yunchmall.sale.service.ICouponProductRelationService;
 import com.zrrd.yunchmall.sale.service.ICouponService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -21,6 +30,61 @@ import org.springframework.util.StringUtils;
 @Service
 public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> implements ICouponService {
 
+    @Autowired
+    private ICouponProductCategoryRelationService CategoryRelationService;
+
+    @Autowired
+    private ICouponProductRelationService couponProductRelationService;
+
+    @Override
+    public boolean save(Coupon coupon) {
+        super.save(coupon);
+
+        List<CouponProductCategoryRelation> couponProductCategoryRelationList = coupon.getProductCategoryRelationList();
+        couponProductCategoryRelationList.forEach(item -> {
+            item.setCouponId(coupon.getId());
+        });
+        CategoryRelationService.saveBatch(couponProductCategoryRelationList);
+
+        List<CouponProductRelation> couponProductRelationList = coupon.getProductRelationList();
+        couponProductRelationList.forEach(item -> {
+            item.setCouponId(coupon.getId());
+        });
+        couponProductRelationService.saveBatch(couponProductRelationList);
+
+        return true;
+    }
+
+    @Override
+    public boolean removeById(Serializable id) {
+        super.removeById(id);
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("coupon_id", id);
+
+        CategoryRelationService.remove(queryWrapper);
+        couponProductRelationService.remove(queryWrapper);
+
+        return true;
+    }
+
+    @Override
+    public Coupon getById(Serializable id) {
+        Coupon coupon = super.getById(id);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("coupon_id", coupon.getId());
+        coupon.setProductCategoryRelationList(CategoryRelationService.list(queryWrapper));
+        coupon.setProductRelationList(couponProductRelationService.list(queryWrapper));
+        return coupon;
+    }
+
+    @Override
+    public boolean updateById(Coupon coupon) {
+        super.updateById(coupon);
+        CategoryRelationService.updateBatchById(coupon.getProductCategoryRelationList());
+        couponProductRelationService.updateBatchById(coupon.getProductRelationList());
+        return true;
+    }
 
     /**
      * 查询优惠券列表

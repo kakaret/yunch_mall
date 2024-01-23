@@ -1,13 +1,18 @@
 package com.zrrd.yunchmall.sale.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.zrrd.yunchmall.product.entity.ProductCategory;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * <p>
@@ -19,6 +24,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @TableName("sms_coupon")
 @ApiModel(value = "Coupon对象", description = "优惠券表")
+@Data
 public class Coupon implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -76,6 +82,12 @@ public class Coupon implements Serializable {
 
     @ApiModelProperty("可领取的会员类型：0->无限时")
     private Integer memberLevel;
+
+    @TableField(exist = false)
+    private List<CouponProductCategoryRelation> productCategoryRelationList;
+
+    @TableField(exist = false)
+    private List<CouponProductRelation> productRelationList;
 
     public Long getId() {
         return id;
