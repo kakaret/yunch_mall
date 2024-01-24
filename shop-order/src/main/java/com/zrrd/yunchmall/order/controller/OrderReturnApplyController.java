@@ -1,6 +1,7 @@
 package com.zrrd.yunchmall.order.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zrrd.yunchmall.order.entity.OrderReturnApply;
 import com.zrrd.yunchmall.order.service.IOrderReturnApplyService;
@@ -14,6 +15,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 /**
@@ -73,10 +75,19 @@ public class OrderReturnApplyController {
     }
 
     @ApiOperation("处理退货订单")
-    @PostMapping("/status/{id}")
+    @PostMapping("/update/status/{id}")
     public ResponseResult status(@PathVariable("id") long id, @RequestBody OrderReturnApply orderReturnApply) {
-        orderReturnApply.setId(id);
-        orderReturnApplyService.updateById(orderReturnApply);
+        UpdateWrapper updateWrapper = new UpdateWrapper();
+        updateWrapper.set("company_address_id", orderReturnApply.getCompanyAddressId());
+        updateWrapper.set("handle_man", orderReturnApply.getHandleMan());
+        updateWrapper.set("handle_note", orderReturnApply.getHandleNote());
+        updateWrapper.set("receive_man", orderReturnApply.getReceiveMan());
+        updateWrapper.set("receive_note", orderReturnApply.getReceiveNote());
+        updateWrapper.set("return_amount", orderReturnApply.getReturnAmount());
+        updateWrapper.set("status", orderReturnApply.getStatus());
+        updateWrapper.set("handle_time", LocalDateTime.now());
+        updateWrapper.eq("id", id);
+        orderReturnApplyService.update(updateWrapper);
         return new ResponseResult(200, "处理成功");
     }
 }
