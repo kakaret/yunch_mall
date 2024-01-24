@@ -2,7 +2,7 @@ package com.zrrd.yunchmall.user.controller;
 
 import com.zrrd.yunchmall.pojo.UserTmp;
 import com.zrrd.yunchmall.user.service.impl.UserServiceImpl;
-import com.zrrd.yunchmall.user.util.JwtUtil;
+import com.zrrd.yunchmall.util.JwtUtil;
 import com.zrrd.yunchmall.util.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -1,8 +1,11 @@
-package com.zrrd.yunchmall.user.util;
+package com.zrrd.yunchmall.util;
 
 import com.zrrd.yunchmall.pojo.UserTmp;
 import com.zrrd.yunchmall.user.entity.Admin;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 import java.util.Date;
 import java.util.UUID;
@@ -48,6 +51,7 @@ public class JwtUtil {
         builder.setSubject("yunch_mall");//设置主题
         builder.claim("userId", userInfo.getId());
         builder.claim("username", userInfo.getUsername());
+        builder.claim("nickName", userInfo.getNickName());
         builder.signWith(SignatureAlgorithm.HS256, salt);//设置加密算法和盐（秘钥）
         //生成token并返回
         return "Bearer " + builder.compact();
@@ -81,6 +85,7 @@ public class JwtUtil {
             Admin admin = new Admin();
             admin.setId(claims.get("userId", Long.class));
             admin.setUsername(claims.get("username", String.class));
+            admin.setNickName(claims.get("nickName", String.class));
             return admin;
         } catch (Exception ex) {
             return null;

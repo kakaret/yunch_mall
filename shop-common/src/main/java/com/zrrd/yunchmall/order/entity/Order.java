@@ -1,6 +1,7 @@
 package com.zrrd.yunchmall.order.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
@@ -8,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * <p>
@@ -19,6 +21,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @TableName("oms_order")
 @ApiModel(value = "Order对象", description = "订单表")
+@Data
 public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -155,6 +158,9 @@ public class Order implements Serializable {
 
     @ApiModelProperty("修改时间")
     private LocalDateTime modifyTime;
+
+    @TableField(exist = false)
+    private long orderId;
 
     public Long getId() {
         return id;

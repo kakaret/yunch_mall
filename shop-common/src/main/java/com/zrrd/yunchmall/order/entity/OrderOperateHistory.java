@@ -1,8 +1,7 @@
 package com.zrrd.yunchmall.order.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
@@ -32,6 +31,7 @@ public class OrderOperateHistory implements Serializable {
     private String operateMan;
 
     @ApiModelProperty("操作时间")
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @ApiModelProperty("订单状态：0->待付款；1->待发货；2->已发货；3->已完成；4->已关闭；5->无效订单")

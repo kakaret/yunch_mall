@@ -8,9 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zrrd.yunchmall.user.entity.Admin;
 import com.zrrd.yunchmall.user.entity.Role;
 import com.zrrd.yunchmall.user.service.IAdminService;
-import com.zrrd.yunchmall.user.util.JwtUtil;
+import com.zrrd.yunchmall.util.JwtUtil;
 import com.zrrd.yunchmall.util.ResponseResult;
-import io.jsonwebtoken.Jws;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -37,6 +36,7 @@ import java.util.List;
 @RequestMapping("/admin")
 @Api(tags = "权限服务-管理员模块")
 public class AdminController {
+
     @Autowired
     private IAdminService adminService;
 

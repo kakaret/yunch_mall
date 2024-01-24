@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zrrd.yunchmall.pojo.UserTmp;
 import com.zrrd.yunchmall.user.mapper.UserMapper;
-import com.zrrd.yunchmall.user.util.JwtUtil;
+import com.zrrd.yunchmall.util.JwtUtil;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
