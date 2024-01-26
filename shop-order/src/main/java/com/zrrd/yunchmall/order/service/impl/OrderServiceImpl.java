@@ -10,17 +10,18 @@ import com.zrrd.yunchmall.order.entity.OrderOperateHistory;
 import com.zrrd.yunchmall.order.mapper.OrderMapper;
 import com.zrrd.yunchmall.order.mapper.OrderOperateHistoryMapper;
 import com.zrrd.yunchmall.order.service.IOrderItemService;
-import com.zrrd.yunchmall.order.service.IOrderOperateHistoryService;
 import com.zrrd.yunchmall.order.service.IOrderService;
 import com.zrrd.yunchmall.user.entity.Admin;
 import com.zrrd.yunchmall.util.JwtUtil;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -33,7 +34,7 @@ import java.util.*;
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements IOrderService {
 
-//    注入一个商品服务的客户端 便于远程调用商品服务的接口
+    //    注入一个商品服务的客户端 便于远程调用商品服务的接口
     @Autowired
     private ProductServiceClient productServiceClient;
 
@@ -122,7 +123,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             queryWrapper.eq("id", id);
             Order order = super.getOne(queryWrapper);
 //            订单存在 且状态满足删除条件
-            if(order != null && (order.getStatus() == 4 || order.getStatus()== 5)) {
+            if (order != null && (order.getStatus() == 4 || order.getStatus() == 5)) {
 //                删除满足状态的订单
                 UpdateWrapper updateWrapper = new UpdateWrapper();
                 updateWrapper.set("delete_status", 1);
@@ -163,4 +164,35 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderOperateHistory.setNote("修改收货人地址！");
         historyMapper.insert(orderOperateHistory);
     }
+
+    @Override
+    @Transactional
+    public void moneyInfo(Order order, String token) {
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id", order.getOrderId());
+        Order order1 = super.getOne(queryWrapper);
+        if (order.getDiscountAmount() != null)
+            order1.setDiscountAmount(order.getDiscountAmount());
+        if (order.getFreightAmount() != null)
+            order1.setFreightAmount(order.getFreightAmount());
+        //修改订单金额
+        order1.setPayAmount(order1.getTotalAmount()
+                .add(order1.getFreightAmount())
+                .subtract(order1.getCouponAmount())
+                .subtract(order1.getIntegrationAmount())
+                .subtract(order1.getPromotionAmount())
+                .subtract(order1.getDiscountAmount())
+        );
+        super.updateById(order1);
+
+        Admin admin = JwtUtil.parseAdminToken(token.substring(7));
+        OrderOperateHistory orderOperateHistory = new OrderOperateHistory();
+        orderOperateHistory.setOrderId(order.getOrderId());
+        orderOperateHistory.setOperateMan(admin.getNickName());
+        orderOperateHistory.setOrderStatus(order.getStatus());
+        orderOperateHistory.setNote("修改订单费用信息！");
+        historyMapper.insert(orderOperateHistory);
+    }
+
 }

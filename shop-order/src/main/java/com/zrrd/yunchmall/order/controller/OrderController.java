@@ -171,23 +171,8 @@ public class OrderController {
 
     @ApiOperation("修改费用信息")
     @PostMapping("/update/moneyInfo")
-    @Transactional
     public ResponseResult moneyInfo(@RequestBody Order order, @RequestHeader("Authorization") String token) {
-        UpdateWrapper updateWrapper = new UpdateWrapper();
-        updateWrapper.set("discount_amount", order.getDiscountAmount());
-        updateWrapper.set("freight_amount", order.getFreightAmount());
-        updateWrapper.set("order_status", order.getStatus());
-        updateWrapper.eq("id", order.getOrderId());
-        orderService.update(updateWrapper);
-
-        Admin admin = JwtUtil.parseAdminToken(token.substring(7));
-        OrderOperateHistory orderOperateHistory = new OrderOperateHistory();
-        orderOperateHistory.setOrderId(order.getOrderId());
-        orderOperateHistory.setOperateMan(admin.getNickName());
-        orderOperateHistory.setOrderStatus(order.getStatus());
-        orderOperateHistory.setNote("修改订单费用信息！");
-        historyService.save(orderOperateHistory);
-
+        orderService.moneyInfo(order, token);
         return new ResponseResult(200, "修改成功");
     }
 

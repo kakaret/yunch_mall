@@ -27,4 +27,6 @@ public interface IOrderService extends IService<Order> {
     void remove(String ids, String token);
 
     void updateReceiverInfo(Order order, String token);
+
+    void moneyInfo(Order order, String token);
 }
