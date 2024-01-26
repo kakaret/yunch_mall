@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zrrd.yunchmall.order.entity.OrderReturnApply;
 import com.zrrd.yunchmall.order.service.IOrderReturnApplyService;
+import com.zrrd.yunchmall.user.entity.Admin;
+import com.zrrd.yunchmall.util.JwtUtil;
 import com.zrrd.yunchmall.util.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,19 +52,20 @@ public class OrderReturnApplyController {
                                String handleTime) {
         QueryWrapper<OrderReturnApply> queryWrapper = new QueryWrapper();
         if(id != null) {
-            queryWrapper.like("id", id);
-        }
-        if(status != null) {
-            queryWrapper.eq("status", status);
-        }
-        if(!StringUtils.isEmpty(createTime)) {
-            queryWrapper.like("create_time", createTime);
-        }
-        if(!StringUtils.isEmpty(handleMan)) {
-            queryWrapper.like("handle_man", handleMan);
-        }
-        if(!StringUtils.isEmpty(handleTime)) {
-            queryWrapper.like("handle_time", handleTime);
+            queryWrapper.eq("id", id);
+        } else {
+            if (status != null) {
+                queryWrapper.eq("status", status);
+            }
+            if (!StringUtils.isEmpty(createTime)) {
+                queryWrapper.between("create_time", createTime + " 00:00:00", createTime + " 23:59:59");
+            }
+            if (!StringUtils.isEmpty(handleMan)) {
+                queryWrapper.like("handle_man", handleMan);
+            }
+            if (!StringUtils.isEmpty(handleTime)) {
+                queryWrapper.between("handle_time", handleTime + " 00:00:00", handleTime + " 23:59:59");
+            }
         }
         return new ResponseResult(200, "查询成功", orderReturnApplyService.page(new Page<>(pageNum, pageSize), queryWrapper));
     }
@@ -76,17 +79,23 @@ public class OrderReturnApplyController {
 
     @ApiOperation("处理退货订单")
     @PostMapping("/update/status/{id}")
-    public ResponseResult status(@PathVariable("id") long id, @RequestBody OrderReturnApply orderReturnApply) {
+    public ResponseResult status(@PathVariable("id") long id, @RequestBody OrderReturnApply orderReturnApply, @RequestHeader("Authorization") String token){
+        Admin admin = JwtUtil.parseAdminToken(token.substring(7));
         UpdateWrapper updateWrapper = new UpdateWrapper();
-        updateWrapper.set("company_address_id", orderReturnApply.getCompanyAddressId());
-        updateWrapper.set("handle_man", orderReturnApply.getHandleMan());
-        updateWrapper.set("handle_note", orderReturnApply.getHandleNote());
-        updateWrapper.set("receive_man", orderReturnApply.getReceiveMan());
-        updateWrapper.set("receive_note", orderReturnApply.getReceiveNote());
-        updateWrapper.set("return_amount", orderReturnApply.getReturnAmount());
+        updateWrapper.eq("id", id);
         updateWrapper.set("status", orderReturnApply.getStatus());
         updateWrapper.set("handle_time", LocalDateTime.now());
-        updateWrapper.eq("id", id);
+        updateWrapper.set("handle_man", admin.getUsername());
+        updateWrapper.set("handle_note", orderReturnApply.getHandleNote());
+        if(orderReturnApply.getStatus() == 1) { //同意退货
+            updateWrapper.set("return_amount", orderReturnApply.getReturnAmount());
+            updateWrapper.set("company_address_id", orderReturnApply.getCompanyAddressId());
+        }
+        if(orderReturnApply.getStatus() == 2){ //确实收到退货
+            updateWrapper.set("receive_time", LocalDateTime.now());
+            updateWrapper.set("receive_man", admin.getUsername());
+            updateWrapper.set("receive_note", orderReturnApply.getReceiveNote());
+        }
         orderReturnApplyService.update(updateWrapper);
         return new ResponseResult(200, "处理成功");
     }
