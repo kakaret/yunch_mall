@@ -24,4 +24,6 @@ public interface ICouponService extends IService<Coupon> {
      * @return
      */
     Page<Coupon> list(Integer pageNum, Integer pageSize, String name, Integer type);
+
+    void freeCoupon(Long orderId);
 }

@@ -4,6 +4,7 @@ import com.zrrd.yunchmall.sale.entity.Coupon;
 import com.zrrd.yunchmall.sale.service.ICouponService;
 import com.zrrd.yunchmall.sale.service.ICouponService;
 import com.zrrd.yunchmall.util.ResponseResult;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,5 +61,12 @@ public class CouponController {
     public ResponseResult delete(@PathVariable("id") Long id) {
         couponService.removeById(id);
         return new ResponseResult(200, "删除成功");
+    }
+
+    @ApiOperation("关闭订单退还优惠券")
+    @RequestMapping("/freeCoupon")
+    public ResponseResult freeCoupon(@RequestParam Long orderId) {
+        couponService.freeCoupon(orderId);
+        return new ResponseResult(200, "关闭订单退还优惠券成功");
     }
 }

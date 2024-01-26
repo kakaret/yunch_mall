@@ -2,11 +2,13 @@ package com.zrrd.yunchmall.order.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zrrd.yunchmall.order.client.AdminServiceClient;
 import com.zrrd.yunchmall.order.client.ProductServiceClient;
 import com.zrrd.yunchmall.order.entity.Order;
 import com.zrrd.yunchmall.order.entity.OrderOperateHistory;
+import com.zrrd.yunchmall.order.service.IOrderItemService;
 import com.zrrd.yunchmall.order.service.IOrderOperateHistoryService;
 import com.zrrd.yunchmall.order.service.IOrderService;
 import com.zrrd.yunchmall.user.entity.Admin;
@@ -27,6 +29,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -49,110 +53,92 @@ public class OrderController {
     private IOrderService orderService;
     @Autowired
     private IOrderOperateHistoryService historyService;
+    @Autowired
+    private IOrderItemService orderItemService;
 
     @ApiOperation("查询订单列表")
     @GetMapping("/list")
     public ResponseResult list(@RequestParam int pageNum, @RequestParam int pageSize,
-                               Integer orderSn,
+                               String orderSn,
                                String receiverKeyword,
                                Integer status,
                                Integer orderType,
                                Integer sourceType,
                                String createTime) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        if(orderSn != null) {
-            queryWrapper.like("order_sn", orderSn);
-        }
-        if(!StringUtils.isEmpty(receiverKeyword)) {
-            queryWrapper.like("receiver_keyword", receiverKeyword);
-        }
-        if(status != null) {
-            queryWrapper.eq("status", status);
-        }
-        if(orderType != null) {
-            queryWrapper.eq("order_type", orderType);
-        }
-        if(sourceType != null) {
-            queryWrapper.eq("source_type", sourceType);
-        }
-        if(!StringUtils.isEmpty(createTime)) {
-            queryWrapper.like("create_time", createTime);
+        queryWrapper.eq("delete_status", 0);
+        if(!StringUtils.isEmpty(orderSn)) {
+            queryWrapper.eq("order_sn", orderSn);
+//            在查询语句中的结尾
+            queryWrapper.last(" limit 1");
+            List<Order> orderList = orderService.list(queryWrapper);
+            IPage page = new Page(pageNum, pageSize);
+            page.setTotal(orderList.size());
+            page.setPages(orderList.size());
+            page.setRecords(orderList);
+            return new ResponseResult(200, "查询成功", page);
+        } else {
+            if (!StringUtils.isEmpty(receiverKeyword)) {
+                String regStr = "^1[345678]\\d{9}";
+//                正则表达式的API Pattern和Matcher
+//                编译正则表达式
+                Pattern pattern = Pattern.compile(regStr);
+//                使用正则规则去匹配给定的字符串
+                Matcher matcher = pattern.matcher(receiverKeyword);
+//                提供的关键字是手机号
+                if(matcher.matches()) {
+                    queryWrapper.eq("receiver_phone", receiverKeyword);
+                } else {
+                    queryWrapper.eq("receiver_name", receiverKeyword);
+                }
+            }
+            if (status != null) {
+                queryWrapper.eq("status", status);
+            }
+            if (orderType != null) {
+                queryWrapper.eq("order_type", orderType);
+            }
+            if (sourceType != null) {
+                queryWrapper.eq("source_type", sourceType);
+            }
+            if (!StringUtils.isEmpty(createTime)) {
+                queryWrapper.between("create_time", createTime + " 00:00:00", createTime + " 23:59:59");
+            }
         }
         return new ResponseResult(200, "查询成功", orderService.page(new Page<>(pageNum, pageSize), queryWrapper));
     }
 
     @ApiOperation("查询单个订单信息")
     @GetMapping("/{id}")
-    public ResponseResult found(@PathVariable("id") long id) {
-        return new ResponseResult(200, "查询成功", orderService.getById(id));
+    public ResponseResult detail(@PathVariable("id") long id) {
+        Order order = orderService.getById(id);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_id", id);
+//        查询订单单项列表（商品信息）
+        order.setOrderItemList(orderItemService.list(queryWrapper));
+//        查询订单的操作历史
+        order.setHistoryList(historyService.list(queryWrapper));
+        return new ResponseResult(200, "查询成功", order);
     }
 
     @ApiOperation("删除订单")
     @PostMapping("/delete")
-    @Transactional
     public ResponseResult delete(@RequestParam String ids, @RequestHeader("Authorization") String token) {
-        List<String> idsList = Arrays.asList(ids.split(","));
-        Admin admin = JwtUtil.parseAdminToken(token.substring(7));
-        List<OrderOperateHistory> orderOperateHistoryList = new ArrayList<>();
-        idsList.forEach(id -> {
-                    OrderOperateHistory orderOperateHistory = new OrderOperateHistory();
-                    orderOperateHistory.setOrderId(Long.valueOf(id));
-                    orderOperateHistory.setOperateMan(admin.getNickName());
-                    orderOperateHistory.setOrderStatus(4);
-                    orderOperateHistory.setNote("删除订单!");
-                    orderOperateHistoryList.add(orderOperateHistory);
-                });
-        historyService.saveBatch(orderOperateHistoryList);
-        orderService.removeBatchByIds(idsList);
+        orderService.remove(ids, token);
         return new ResponseResult(200, "删除成功");
     }
 
     @ApiOperation("关闭订单")
     @PostMapping("/update/close")
-    @Transactional
     public ResponseResult close(@RequestParam String ids, @RequestParam String note, @RequestHeader("Authorization") String token) {
-        UpdateWrapper updateWrapper = new UpdateWrapper();
-        updateWrapper.set("status", 4);
-        updateWrapper.set("note", note);
-        String[] id = ids.split(",");
-        updateWrapper.in("id", id);
-        Admin admin = JwtUtil.parseAdminToken(token.substring(7));
-        List<OrderOperateHistory> orderOperateHistoryList = new ArrayList<>();
-        for (int i = 0; i < id.length; i++) {
-            OrderOperateHistory orderOperateHistory = new OrderOperateHistory();
-            orderOperateHistory.setOrderId(Long.valueOf(id[i]));
-            orderOperateHistory.setOperateMan(admin.getNickName());
-            orderOperateHistory.setOrderStatus(4);
-            orderOperateHistory.setNote("关闭订单：" + note);
-            orderOperateHistoryList.add(orderOperateHistory);
-        }
-        historyService.saveBatch(orderOperateHistoryList);
-        orderService.update(updateWrapper);
+        orderService.closeOrder(ids, note, token);
         return new ResponseResult(200, "修改成功");
     }
 
     @ApiOperation("订单发货")
     @PostMapping("/update/delivery")
-    @Transactional
     public ResponseResult delivery(@RequestBody List<Order> orderList, @RequestHeader("Authorization") String token) {
-        UpdateWrapper updateWrapper = new UpdateWrapper();
-        orderList.forEach(order -> {
-            updateWrapper.clear();
-            updateWrapper.set("delivery_company", order.getDeliveryCompany());
-            updateWrapper.set("delivery_sn", order.getDeliverySn());
-            updateWrapper.set("delivery_time", LocalDateTime.now());
-            updateWrapper.eq("id", order.getOrderId());
-            orderService.update(updateWrapper);
-
-            Admin admin = JwtUtil.parseAdminToken(token.substring(7));
-            OrderOperateHistory orderOperateHistory = new OrderOperateHistory();
-            orderOperateHistory.setOrderId(order.getOrderId());
-            orderOperateHistory.setOperateMan(admin.getNickName());
-            orderOperateHistory.setOrderStatus(order.getStatus());
-            orderOperateHistory.setNote("订单发货");
-            historyService.save(orderOperateHistory);
-
-        });
+        orderService.deliveryOrder(orderList, token);
         return new ResponseResult(200, "修改成功");
     }
 
@@ -178,27 +164,8 @@ public class OrderController {
 
     @ApiOperation("修改收货人信息")
     @PostMapping("/update/receiverInfo")
-    @Transactional
     public ResponseResult receiverInfo(@RequestBody Order order, @RequestHeader("Authorization") String token) {
-        UpdateWrapper<Order> updateWrapper = new UpdateWrapper();
-        updateWrapper.set("receiver_city", order.getReceiverCity());
-        updateWrapper.set("receiver_detail_address", order.getReceiverDetailAddress());
-        updateWrapper.set("receiver_name", order.getReceiverName());
-        updateWrapper.set("receiver_phone", order.getReceiverPhone());
-        updateWrapper.set("receiver_post_code", order.getReceiverPostCode());
-        updateWrapper.set("receiver_province", order.getReceiverProvince());
-        updateWrapper.set("receiver_region", order.getReceiverRegion());
-        updateWrapper.eq("id", order.getOrderId());
-        orderService.update(updateWrapper);
-
-        Admin admin = JwtUtil.parseAdminToken(token.substring(7));
-        OrderOperateHistory orderOperateHistory = new OrderOperateHistory();
-        orderOperateHistory.setOrderId(order.getOrderId());
-        orderOperateHistory.setOperateMan(admin.getNickName());
-        orderOperateHistory.setOrderStatus(order.getStatus());
-        orderOperateHistory.setNote("修改收货人地址！");
-        historyService.save(orderOperateHistory);
-
+        orderService.updateReceiverInfo(order, token);
         return new ResponseResult(200, "修改成功");
     }
 

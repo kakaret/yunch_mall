@@ -3,6 +3,9 @@ package com.zrrd.yunchmall.product.service;
 import com.zrrd.yunchmall.product.entity.Product;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 商品信息 服务类
@@ -12,4 +15,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2024-01-15
  */
 public interface IProductService extends IService<Product> {
+
+    void freeStock(List<Map<String, Long>> params);
 }

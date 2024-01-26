@@ -1,6 +1,7 @@
 package com.zrrd.yunchmall.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zrrd.yunchmall.content.entity.PrefrenceAreaProductRelation;
 import com.zrrd.yunchmall.content.entity.SubjectProductRelation;
 import com.zrrd.yunchmall.product.client.ContentService;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -222,5 +224,40 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         contentService.createAPR(prefrenceAreaProductRelationList);
 
         return true;
+    }
+
+    @Override
+    @Transactional
+    public void freeStock(List<Map<String, Long>> params) {
+//        遍历params
+//        更新商品库存
+//        更新sku库存
+        params.forEach(param -> {
+
+            Long productId = param.get("productId");
+            Long skuId = param.get("skuId");
+            Long quantity = param.get("quantity");
+
+            UpdateWrapper updateWrapper = new UpdateWrapper();
+            QueryWrapper queryWrapper = new QueryWrapper();
+
+            queryWrapper.select("stock");
+            queryWrapper.eq("id", productId);
+            int stock = super.getOne(queryWrapper).getStock();
+            updateWrapper.set("stock", stock + quantity);
+            updateWrapper.eq("id", productId);
+//            更新商品表的库存
+            super.update(updateWrapper);
+
+            updateWrapper.clear();
+            queryWrapper.clear();
+            queryWrapper.select("stock");
+            queryWrapper.eq("id", skuId);
+            stock = skuStockService.getOne(queryWrapper).getStock();
+            updateWrapper.set("stock", stock + quantity);
+            updateWrapper.eq("id", skuId);
+//            更新sku表库存
+            skuStockService.update(updateWrapper);
+        });
     }
 }

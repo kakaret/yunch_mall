@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 商品信息 前端控制器
@@ -28,6 +31,13 @@ public class ProductController {
 
     @Autowired
     private IProductService productService;
+
+    @ApiOperation("退货或关闭订单释放内存")
+    @PostMapping("/stock/free")
+    public ResponseResult freeStock(@RequestBody List<Map<String, Long>> params) {
+        productService.freeStock(params);
+        return new ResponseResult(200, "执行成功");
+    }
 
     @ApiOperation("查询商品列表")
     @GetMapping("/list")

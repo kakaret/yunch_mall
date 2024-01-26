@@ -1,12 +1,12 @@
 package com.zrrd.yunchmall.order.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -157,7 +157,14 @@ public class Order implements Serializable {
     private LocalDateTime commentTime;
 
     @ApiModelProperty("修改时间")
+    @TableField(fill = FieldFill.UPDATE)
     private LocalDateTime modifyTime;
+
+    @TableField(exist = false)
+    private List<OrderItem> orderItemList;
+
+    @TableField(exist = false)
+    private List<OrderOperateHistory> historyList;
 
     @TableField(exist = false)
     private long orderId;
