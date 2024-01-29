@@ -36,17 +36,6 @@ public class RoleController {
     @Autowired
     private IRoleService roleService;
 
-    @Autowired
-    private IMenuService menuService;
-
-    @Autowired
-    private IRoleMenuRelationService roleMenuRelationService;
-
-    @Autowired
-    private IResourceService resourceService;
-
-    @Autowired
-    private IRoleResourceRelationService roleResourceRelationService;
 
     @ApiOperation("查询所有角色信息")
     @GetMapping("/listAll")
@@ -109,17 +98,7 @@ public class RoleController {
     @ApiOperation("查询管理员菜单")
     @GetMapping("/listMenu/{roleId}")
     public ResponseResult listMenuByRole(@PathVariable("roleId") long roleId) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("role_id", roleId);
-        List<RoleMenuRelation> roleMenuRelationList = roleMenuRelationService.list(queryWrapper);
-        List<Menu> menuList = new ArrayList<>();
-        if(roleMenuRelationList != null) {
-            for (int i = 0; i < roleMenuRelationList.size(); i++) {
-                Menu menu = menuService.getById(roleMenuRelationList.get(i).getMenuId());
-                menuList.add(menu);
-            }
-        }
-        return new ResponseResult(200,"查询成功", menuList);
+        return new ResponseResult(200,"查询成功", roleService.listMenu(roleId));
     }
 
     @ApiOperation("分配管理员菜单")
@@ -133,17 +112,7 @@ public class RoleController {
     @ApiOperation("查询管理员资源")
     @GetMapping("/listResource/{roleId}")
     public ResponseResult listResourceByRole(@PathVariable("roleId") long roleId) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("role_id", roleId);
-        List<RoleResourceRelation> roleResourceRelationList = roleResourceRelationService.list(queryWrapper);
-        List<Resource> resourceList = new ArrayList<>();
-        if(roleResourceRelationList != null) {
-            for (int i = 0; i < roleResourceRelationList.size(); i++) {
-                Resource resource = resourceService.getById(roleResourceRelationList.get(i).getResourceId());
-                resourceList.add(resource);
-            }
-        }
-        return new ResponseResult(200,"查询成功", resourceList);
+        return new ResponseResult(200,"查询成功", roleService.listResource(roleId));
     }
 
     @ApiOperation("分配管理员资源")

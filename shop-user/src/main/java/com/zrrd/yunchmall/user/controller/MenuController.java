@@ -14,6 +14,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
@@ -35,12 +36,13 @@ import java.util.List;
 public class MenuController {
     @Autowired
     private IMenuService menuService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @ApiOperation("查询菜单树")
     @GetMapping("/treeList")
     public ResponseResult treeList() {
         List<Menu> treeList = menuService.getTreeList();
-
         return new ResponseResult(200,"查询成功",treeList);
     }
 
@@ -68,6 +70,7 @@ public class MenuController {
         if (menu.getLevel() == null) menu.setLevel(0);
         menu.setCreateTime(LocalDateTime.now());
         menuService.save(menu);
+        redisTemplate.delete("MenuTree");
         return new ResponseResult(200,"添加成功");
     }
 
@@ -84,6 +87,7 @@ public class MenuController {
         UpdateWrapper updateWrapper = new UpdateWrapper();
         updateWrapper.eq("id",id);// where 字句
         menuService.update(menu,updateWrapper);
+        redisTemplate.delete("MenuTree");
         return new ResponseResult(200, "修改成功");
     }
 
@@ -91,6 +95,7 @@ public class MenuController {
     @PostMapping("/delete/{id}")
     public ResponseResult delete(@PathVariable("id") long id) {
         menuService.removeById(id);
+        redisTemplate.delete("MenuTree");
         return new ResponseResult(200,"删除成功");
     }
 

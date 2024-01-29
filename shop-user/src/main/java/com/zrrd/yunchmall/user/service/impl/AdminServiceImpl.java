@@ -13,13 +13,16 @@ import com.zrrd.yunchmall.user.service.IAdminService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zrrd.yunchmall.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import springfox.documentation.annotations.Cacheable;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -39,6 +42,8 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
     private RoleMapper roleMapper;
     @Autowired
     private AdminRoleRelationMapper roleRelationMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public String login(String username, String password) {
@@ -61,8 +66,17 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
                 updateWrapper.eq("id",admin.getId());
                 super.update(updateWrapper);
 
-                return JwtUtil.create(24 * 30 * 60 * 1000, admin);
-//                return userTmp;
+                String token = JwtUtil.create(24 * 30 * 60 * 1000, admin);
+//                登录成功就将这个token同时存入redis 并设置一个有效时长
+//                redisTemplate.opsForSet().add("LOGIN_TOKEN", token);
+//                将jwt token的第三部分：签名作为（最后一个小数点之后的部分）key
+                String key = "LOGIN_TOKEN_" + token.substring(token.lastIndexOf(".") + 1);
+//                将整个token做value
+                String value = token;
+//                登陆成功 就将生成的token同时存入redis并设置一个有效时长
+                redisTemplate.opsForValue().set(key, value);
+                redisTemplate.expire(key, 12, TimeUnit.HOURS);
+                return token;
             }
         }
         //用户名或密码错误则返回null
@@ -70,6 +84,9 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
     }
 
     @Override
+    @Cacheable(value = "Admin")
+//    @Cacheable(value = "Role", key = "#root + '_' + #roleId")
+//    @Cacheable(value = "Role", key = "#root.args[0]")
     public Admin setPermissionInfo(Admin admin) {
         admin =super.getById(admin.getId());
         // 注入角色列表
