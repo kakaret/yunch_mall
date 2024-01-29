@@ -65,7 +65,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     }
 
     @Override
-    @Cacheable(value = "Role", key = "#root.args[0]")
+    @Cacheable(value = "Role", key = "#root.methodName + '_' + #root.args[0]")
     public List<Resource> listResource(long roleId) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("role_id", roleId);
