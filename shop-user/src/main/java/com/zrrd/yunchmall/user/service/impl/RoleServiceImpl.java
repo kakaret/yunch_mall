@@ -47,8 +47,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
 //    Role：listMenu_5
 
 
+    /*
+    * 该方法的返回结果将会使用Redis进行缓存 缓存的过期时间为5min 缓存序列化方式为JSON
+    * */
     @Override
-    @Cacheable(value = "Role", key = "#root + '_' + #roleId")
+    @Cacheable(value = "Role", key = "#root.methodName + '_' + #roleId", cacheManager = "cacheManager5Minute")
     public List<Menu> listMenu(long roleId) {
 
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -65,7 +68,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     }
 
     @Override
-    @Cacheable(value = "Role", key = "#root.methodName + '_' + #root.args[0]")
+    @Cacheable(value = "Role", key = "#root.methodName + '_' + #root.args[0]", cacheManager = "cacheManager1Minute")
     public List<Resource> listResource(long roleId) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("role_id", roleId);
