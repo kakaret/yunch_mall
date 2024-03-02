@@ -3,6 +3,7 @@ package com.zrrd.yunchmall.order.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zrrd.yunchmall.config.RabbitConfig;
 import com.zrrd.yunchmall.order.entity.OrderReturnApply;
 import com.zrrd.yunchmall.order.service.IOrderReturnApplyService;
 import com.zrrd.yunchmall.user.entity.Admin;
@@ -12,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.models.auth.In;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -35,6 +39,7 @@ public class OrderReturnApplyController {
 
     @Autowired
     private IOrderReturnApplyService orderReturnApplyService;
+    private RabbitTemplate rabbitTemplate; //注入一个rabbit模板实例用来发布消息
 
     @ApiOperation("查询单个退货申请")
     @GetMapping("/{id}")
@@ -92,6 +97,12 @@ public class OrderReturnApplyController {
             updateWrapper.set("company_address_id", orderReturnApply.getCompanyAddressId());
         }
         if(orderReturnApply.getStatus() == 2){ //确实收到退货
+//            生成一个mq消息 通知商品服务修改商品库存
+            Map map = new HashMap();
+            map.put("info", "退货修改库存");
+            map.put("productId", orderReturnApply.getProductId());
+            map.put("productCount", orderReturnApply.getProductCount());
+            rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, "mall_return", map);
             updateWrapper.set("receive_time", LocalDateTime.now());
             updateWrapper.set("receive_man", admin.getUsername());
             updateWrapper.set("receive_note", orderReturnApply.getReceiveNote());

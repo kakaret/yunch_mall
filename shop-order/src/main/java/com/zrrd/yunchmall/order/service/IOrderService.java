@@ -2,6 +2,7 @@ package com.zrrd.yunchmall.order.service;
 
 import com.zrrd.yunchmall.order.entity.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -14,6 +15,17 @@ import java.util.List;
  * @since 2024-01-16
  */
 public interface IOrderService extends IService<Order> {
+
+    /**
+     * 提交订单的方法
+     * @param pid 商品Id
+     * @param num 购买数量
+     * @param memberId 会员id
+     * @param memberUsername 会员用户名
+     * @param receiverName 收件人姓名
+     * @param receiverPhone 收件人电话
+     */
+    void submitOrder(Long pid, Integer num, Long memberId, String memberUsername, String receiverName, String receiverPhone);
 
     void closeOrder(String ids, String note, String token);
 

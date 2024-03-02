@@ -1,19 +1,29 @@
 package com.zrrd.yunchmall.product.service.impl;
 
+import com.alibaba.cloud.commons.lang.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zrrd.yunchmall.content.entity.PrefrenceAreaProductRelation;
 import com.zrrd.yunchmall.content.entity.SubjectProductRelation;
 import com.zrrd.yunchmall.product.client.ContentService;
 import com.zrrd.yunchmall.product.entity.*;
 import com.zrrd.yunchmall.product.mapper.ProductMapper;
 import com.zrrd.yunchmall.product.service.*;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -144,10 +154,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         List<SkuStock> skuStockList = skuStockService.list(queryWrapper);
         product.setSkuStockList(skuStockList);
 //        7.添加商品关联专题信息（专题商品关系）
-        List<SubjectProductRelation> subjectProductRelationList = (List) contentService.listSPR((Long) id).getData();
+        List<SubjectProductRelation> subjectProductRelationList = (List) contentService.listSPR((long) id).getData();
         product.setSubjectProductRelationList(subjectProductRelationList);
 //        8.添加商品关联优选信息（用户喜好商品关系）
-        List<PrefrenceAreaProductRelation> prefrenceAreaProductRelationList = (List) contentService.listAPR((Long) id).getData();
+        List<PrefrenceAreaProductRelation> prefrenceAreaProductRelationList = (List) contentService.listAPR((long) id).getData();
         product.setPrefrenceAreaProductRelationList(prefrenceAreaProductRelationList);
 
         return product;
@@ -259,5 +269,54 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 //            更新sku表库存
             skuStockService.update(updateWrapper);
         });
+    }
+
+//    @Autowired
+    private ElasticsearchRestTemplate elasticsearchRestTemplate;
+
+    @Override
+    public Page page(String keyword, Integer publishStatus, Integer verifyStatus, String productSn, Integer productCategoryId, Integer brandId, int pageNum, int pageSize) {
+        NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
+        if (!StringUtils.isEmpty(keyword)) {
+            MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(keyword, "name", "subTitle", "description", "keywords");
+            nativeSearchQueryBuilder.withQuery(multiMatchQueryBuilder);
+        }
+        if (publishStatus != null) {
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("publishStatus", publishStatus);
+            nativeSearchQueryBuilder.withQuery(termQueryBuilder);
+        }
+        if (verifyStatus != null) {
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("verifyStatus", verifyStatus);
+            nativeSearchQueryBuilder.withQuery(termQueryBuilder);
+        }
+        if (!StringUtils.isEmpty(productSn)) {
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("productSn", productSn);
+            nativeSearchQueryBuilder.withQuery(termQueryBuilder);
+        }
+        if (productCategoryId != null) {
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("productCategoryId", productCategoryId);
+            nativeSearchQueryBuilder.withQuery(termQueryBuilder);
+        }
+        if (brandId != null) {
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("brandId", brandId);
+            nativeSearchQueryBuilder.withQuery(termQueryBuilder);
+        }
+        PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize);
+        nativeSearchQueryBuilder.withPageable(pageRequest);
+        SearchHits<Product> searchHits = elasticsearchRestTemplate.search(nativeSearchQueryBuilder.build(), Product.class);
+        Page page = new Page();
+        page.setTotal(searchHits.getTotalHits());
+        page.setSize(pageRequest.getPageSize());
+        long pages = searchHits.getTotalHits() % pageRequest.getPageSize() == 0 ?
+                searchHits.getTotalHits() / pageRequest.getPageSize() :
+                searchHits.getTotalHits() / pageRequest.getPageSize() + 1;
+        page.setPages(pages);
+        page.setCurrent(pageRequest.getPageNumber() + 1);
+        List<Product> records = new ArrayList<>();
+        searchHits.forEach(item -> {
+            records.add(item.getContent());
+        });
+        page.setRecords(records);
+        return page;
     }
 }

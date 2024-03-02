@@ -16,3 +16,31 @@ spring:
         shared-configs: all-service.yaml #所有模块共享的统一配置文件
   profiles:
 #    active: dev
+
+  ####################################################################################################
+  # Seata 配置
+seata:
+  enabled: true # 默认开启
+  application-id: ${spring.application.name}
+  tx-service-group: default_tx_group # 事务群组（可以每个应用独立取名，也可以使用相同的名字）
+  registry:
+    type: nacos  # file 、nacos 、eureka、redis、zk、consul、etcd3、sofa
+    nacos:
+      server-addr: 127.0.0.1:8848
+      namespace:
+      cluster: default
+      group: SEATA_GROUP
+      username: nacos
+      password: nacos
+  config:
+    type: nacos  # file、nacos 、apollo、zk、consul、etcd3
+    nacos:
+      server-addr: 127.0.0.1:8848
+      namespace:
+      group: SEATA_GROUP
+      username: nacos
+      password: nacos
+      data-id: seata-file-conf.yaml
+  log:
+    exception-rate: 100
+####################################################################################################

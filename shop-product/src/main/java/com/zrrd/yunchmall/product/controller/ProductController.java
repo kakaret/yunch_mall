@@ -9,10 +9,12 @@ import com.zrrd.yunchmall.util.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.POST;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +34,24 @@ public class ProductController {
     @Autowired
     private IProductService productService;
 
+    @GetMapping("/{id}")
+    public ResponseResult detail(@PathVariable("id") long id) {
+        Product product = productService.getById(id);
+        if(product != null) {
+            return new ResponseResult<>(200, "查询成功", product);
+        } else {
+            return new ResponseResult<>(200, "该商品不存在");
+        }
+    }
+
+    @PostMapping("/subStock")
+    public ResponseResult subStock(@RequestParam("pid") Long pid, @RequestParam("num") Integer num) {
+        Product product = productService.getById(pid);
+        product.setStock(product.getStock() - num);
+        productService.updateById(product);
+        return new ResponseResult(200, "修改库存成功");
+    }
+
     @ApiOperation("退货或关闭订单释放内存")
     @PostMapping("/stock/free")
     public ResponseResult freeStock(@RequestBody List<Map<String, Long>> params) {
@@ -49,20 +69,22 @@ public class ProductController {
                                @ApiParam("商品编码") String productSn,
                                @ApiParam("商品类别ID") Integer productCategoryId,
                                @ApiParam("品牌ID") Integer brandId) {
-        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        if (!StringUtils.isEmpty(keyword))
-            queryWrapper.like("name", keyword);
-        if (publishStatus != null)
-            queryWrapper.like("publish_status", publishStatus);
-        if (verifyStatus != null)
-            queryWrapper.like("verify_status", verifyStatus);
-        if (!StringUtils.isEmpty(productSn))
-            queryWrapper.like("product_sn", productSn);
-        if (productCategoryId != null)
-            queryWrapper.like("product_category_id", productCategoryId);
-        if (brandId != null)
-            queryWrapper.like("brand_id", brandId);
-        return new ResponseResult<>(200, "查询成功", productService.page(new Page<>(pageNum, pageSize), queryWrapper));
+        return new ResponseResult(200, "查询成功",
+                productService.page(keyword, publishStatus, verifyStatus, productSn, productCategoryId, brandId, pageNum, pageSize));
+//        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+//        if (!StringUtils.isEmpty(keyword))
+//            queryWrapper.like("name", keyword);
+//        if (publishStatus != null)
+//            queryWrapper.like("publish_status", publishStatus);
+//        if (verifyStatus != null)
+//            queryWrapper.like("verify_status", verifyStatus);
+//        if (!StringUtils.isEmpty(productSn))
+//            queryWrapper.like("product_sn", productSn);
+//        if (productCategoryId != null)
+//            queryWrapper.like("product_category_id", productCategoryId);
+//        if (brandId != null)
+//            queryWrapper.like("brand_id", brandId);
+//        return new ResponseResult<>(200, "查询成功", productService.page(new Page<>(pageNum, pageSize), queryWrapper));
 
     }
 

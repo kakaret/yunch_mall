@@ -1,0 +1,9 @@
+spring:
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: yunchmall
+    password: yunchmall
+    virtual-host: /mqtest
+    publisher-confirm-type: correlated #confirm模式属性，保证消息从publisher -> exchange的可靠性
+    publisher-returns: true #return模式属性：保证消息从exchange -> queue的可靠性

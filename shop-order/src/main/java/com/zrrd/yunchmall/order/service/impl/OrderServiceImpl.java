@@ -6,17 +6,22 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zrrd.yunchmall.order.client.CouponServiceClient;
 import com.zrrd.yunchmall.order.client.ProductServiceClient;
 import com.zrrd.yunchmall.order.entity.Order;
+import com.zrrd.yunchmall.order.entity.OrderItem;
 import com.zrrd.yunchmall.order.entity.OrderOperateHistory;
 import com.zrrd.yunchmall.order.mapper.OrderMapper;
 import com.zrrd.yunchmall.order.mapper.OrderOperateHistoryMapper;
 import com.zrrd.yunchmall.order.service.IOrderItemService;
 import com.zrrd.yunchmall.order.service.IOrderService;
+import com.zrrd.yunchmall.product.entity.Product;
 import com.zrrd.yunchmall.user.entity.Admin;
 import com.zrrd.yunchmall.util.JwtUtil;
+import io.seata.spring.annotation.GlobalTransactional;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -46,6 +51,38 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     private CouponServiceClient couponServiceClient;
+
+    @Override
+    @GlobalTransactional
+    public void submitOrder(Long pid, Integer num, Long memberId, String memberUsername, String receiverName, String receiverPhone) {
+//        先查询商品信息
+        Product product = productServiceClient.detail(pid).getData();
+//        判断库存是否充足
+        if(product.getStock() >= num) {
+//            计算总价
+            float totalAmount = product.getPrice().floatValue() * num;
+            Order order = new Order();
+            order.setMemberId((long) memberId); //设置会员Id
+            order.setMemberUsername(memberUsername); //设置会员名
+            order.setCreateTime(LocalDateTime.now());
+            order.setReceiverName(receiverName);
+            order.setReceiverPhone(receiverPhone);
+            order.setTotalAmount(new BigDecimal(totalAmount)); //设置订单总金额
+            save(order);
+//            保存订单项
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrderId(order.getId());
+            orderItem.setProductId(product.getId());
+            orderItem.setProductName(product.getName());
+            orderItem.setProductPrice(product.getPrice());
+            orderItem.setProductQuantity(num);
+            itemService.save(orderItem);
+//            远程调用商品服务 完成修改库存的操作
+            productServiceClient.subStock(pid, num);
+        } else {
+            System.out.println("库存不足");
+        }
+    }
 
     @Override
 //    只能用于管理本地事务 第3步需要跨服务完成，会产生分布式事务问题（找Seata帮忙）

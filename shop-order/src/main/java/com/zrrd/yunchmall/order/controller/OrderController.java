@@ -16,6 +16,7 @@ import com.zrrd.yunchmall.util.JwtUtil;
 import com.zrrd.yunchmall.util.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.models.auth.In;
 import net.bytebuddy.implementation.bind.annotation.Pipe;
 import org.aspectj.weaver.ast.Or;
@@ -43,7 +44,7 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping("/order")
 @Api(tags = "订单服务接口")
-public class OrderController {
+public class  OrderController {
 
     @Autowired
     private AdminServiceClient adminService;
@@ -55,6 +56,23 @@ public class OrderController {
     private IOrderOperateHistoryService historyService;
     @Autowired
     private IOrderItemService orderItemService;
+
+    @PostMapping("/submit")
+    @ApiOperation("提交订单")
+    public ResponseResult submitOrder(@RequestParam @ApiParam(value = "商品Id") Long pid,
+                                      @RequestParam @ApiParam(value = "购买数量") Integer num,
+                                      @RequestParam @ApiParam(value = "会员ID") Long memberId,
+                                      @RequestParam @ApiParam(value = "会员用户名") String memberUsername,
+                                      @RequestParam @ApiParam(value = "收件人") String receiverName,
+                                      @RequestParam @ApiParam(value = "收件人电话") String receiverPhone) {
+        try {
+            orderService.submitOrder(pid, num, memberId, memberUsername, receiverName, receiverPhone);
+            return new ResponseResult<>(200, "下单成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResult<>(500, "下单失败", e.getMessage());
+        }
+    }
 
     @ApiOperation("查询订单列表")
     @GetMapping("/list")

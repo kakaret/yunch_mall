@@ -1,10 +1,9 @@
 package com.zrrd.yunchmall.order.client;
 
+import com.zrrd.yunchmall.product.entity.Product;
 import com.zrrd.yunchmall.util.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -17,4 +16,10 @@ public interface ProductServiceClient {
 
     @RequestMapping("/product/testSleuth")
     public String testSleuth();
+
+    @PostMapping("/product/subStock")
+    public ResponseResult subStock(@RequestParam("pid") Long pid, @RequestParam("num") Integer num);
+
+    @GetMapping("/product/{id}")
+    public ResponseResult<Product> detail(@PathVariable("id") long id);
 }
