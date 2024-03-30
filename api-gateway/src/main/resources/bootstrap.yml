@@ -12,3 +12,5 @@ spring:
         shared-configs: all-service.yaml #所有模块共享的统一配置文件
   profiles:
 #    active:
+  main:
+    web-application-type: reactive

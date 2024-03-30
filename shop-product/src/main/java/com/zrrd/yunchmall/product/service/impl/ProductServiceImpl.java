@@ -14,6 +14,7 @@ import com.zrrd.yunchmall.product.service.*;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -271,48 +273,57 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         });
     }
 
-//    @Autowired
+    @Autowired
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
+    //这个分页查询数据源是ES
     @Override
     public Page page(String keyword, Integer publishStatus, Integer verifyStatus, String productSn, Integer productCategoryId, Integer brandId, int pageNum, int pageSize) {
         NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
+        //设置排序规则，根据id属性排序
+        nativeSearchQueryBuilder.withSort(SortBuilders.fieldSort("id"));
+        //针对关键词进行全文查询
         if (!StringUtils.isEmpty(keyword)) {
-            MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(keyword, "name", "subTitle", "description", "keywords");
+            MultiMatchQueryBuilder multiMatchQueryBuilder
+                    = QueryBuilders.multiMatchQuery(keyword, "name", "sub_title", "brand_name", "description", "keywords");
             nativeSearchQueryBuilder.withQuery(multiMatchQueryBuilder);
         }
+        //针对其他属性进行精确检索
         if (publishStatus != null) {
-            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("publishStatus", publishStatus);
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("publish_status", publishStatus);
             nativeSearchQueryBuilder.withQuery(termQueryBuilder);
         }
         if (verifyStatus != null) {
-            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("verifyStatus", verifyStatus);
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("verify_status", verifyStatus);
             nativeSearchQueryBuilder.withQuery(termQueryBuilder);
         }
         if (!StringUtils.isEmpty(productSn)) {
-            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("productSn", productSn);
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("product_sn", productSn);
             nativeSearchQueryBuilder.withQuery(termQueryBuilder);
         }
         if (productCategoryId != null) {
-            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("productCategoryId", productCategoryId);
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("product_category_id", productCategoryId);
             nativeSearchQueryBuilder.withQuery(termQueryBuilder);
         }
         if (brandId != null) {
-            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("brandId", brandId);
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("brand_id", brandId);
             nativeSearchQueryBuilder.withQuery(termQueryBuilder);
         }
+        //设置分页
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize);
         nativeSearchQueryBuilder.withPageable(pageRequest);
+        //查询结果
         SearchHits<Product> searchHits = elasticsearchRestTemplate.search(nativeSearchQueryBuilder.build(), Product.class);
         Page page = new Page();
-        page.setTotal(searchHits.getTotalHits());
-        page.setSize(pageRequest.getPageSize());
-        long pages = searchHits.getTotalHits() % pageRequest.getPageSize() == 0 ?
-                searchHits.getTotalHits() / pageRequest.getPageSize() :
-                searchHits.getTotalHits() / pageRequest.getPageSize() + 1;
-        page.setPages(pages);
+        page.setTotal(searchHits.getTotalHits());//总共条数
+        page.setSize(pageRequest.getPageSize());//每页条数
+        long pages = searchHits.getTotalHits() % pageRequest.getPageSize() == 0 ? //判断是否能够整除
+                searchHits.getTotalHits() / pageRequest.getPageSize() : //整除直接返回商
+                searchHits.getTotalHits() / pageRequest.getPageSize() + 1; //无法整除返回商+1
+        page.setPages(pages);//总共几页
         page.setCurrent(pageRequest.getPageNumber() + 1);
-        List<Product> records = new ArrayList<>();
+        //设置查询列表
+        List<Product> records = new LinkedList<>();
         searchHits.forEach(item -> {
             records.add(item.getContent());
         });

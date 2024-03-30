@@ -1,4 +1,4 @@
-package com.zrrd.yunchmall.product.mq;
+package com.zrrd.yunchmall.product.mapper.mq;
 
 import com.zrrd.yunchmall.config.RabbitConfig;
 import com.zrrd.yunchmall.product.entity.Product;

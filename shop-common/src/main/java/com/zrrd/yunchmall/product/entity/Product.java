@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -186,11 +187,11 @@ public class Product implements Serializable {
     private String detailMobileHtml;
 
     @ApiModelProperty("促销开始时间")
-    @Field(name = "promotion_start_time", type = FieldType.Date, pattern = "yyyy-MM-dd HH:mm:ss")
+    @Field(name = "promotion_start_time", type = FieldType.Date, pattern = "yyyy-MM-dd HH:mm:ss", format = DateFormat.date_time)
     private LocalDateTime promotionStartTime;
 
     @ApiModelProperty("促销结束时间")
-    @Field(name = "promotion_end_time", type = FieldType.Date, pattern = "yyyy-MM-dd HH:mm:ss")
+    @Field(name = "promotion_end_time", type = FieldType.Date, pattern = "yyyy-MM-dd HH:mm:ss", format = DateFormat.date_time)
     private LocalDateTime promotionEndTime;
 
     @ApiModelProperty("活动限购数量")
