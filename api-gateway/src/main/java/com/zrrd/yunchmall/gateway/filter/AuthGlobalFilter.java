@@ -76,9 +76,9 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 //        1.没有token 2.token过期了 3.token无效（被伪造） 4.token令牌在redis中未找到
         String key = "LOGIN_TOKEN_" + token.substring(token.lastIndexOf(".") + 1);
         System.out.println(redisTemplate.hasKey(key));
-        /*if(token == null
-                || JwtUtil.parseAdminToken(token.substring(7)) == null
-                || !redisTemplate.hasKey(key)) {*/
+//        if(token == null
+//                || JwtUtil.parseAdminToken(token.substring(7)) == null
+//                || !redisTemplate.hasKey(key)) {
         if(token == null
                 || JwtUtil.parseAdminToken(token.substring(7)) == null) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);

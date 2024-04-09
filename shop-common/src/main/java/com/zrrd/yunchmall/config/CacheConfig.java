@@ -20,6 +20,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import java.time.Duration;
 
 @Configuration
+@SuppressWarnings("all")
 public class CacheConfig {
 
     /**
