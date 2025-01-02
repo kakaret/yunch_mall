@@ -69,22 +69,22 @@ public class ProductController {
                                @ApiParam("商品编码") String productSn,
                                @ApiParam("商品类别ID") Integer productCategoryId,
                                @ApiParam("品牌ID") Integer brandId) {
-        return new ResponseResult(200, "查询成功",
-                productService.page(keyword, publishStatus, verifyStatus, productSn, productCategoryId, brandId, pageNum, pageSize));
-//        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-//        if (!StringUtils.isEmpty(keyword))
-//            queryWrapper.like("name", keyword);
-//        if (publishStatus != null)
-//            queryWrapper.like("publish_status", publishStatus);
-//        if (verifyStatus != null)
-//            queryWrapper.like("verify_status", verifyStatus);
-//        if (!StringUtils.isEmpty(productSn))
-//            queryWrapper.like("product_sn", productSn);
-//        if (productCategoryId != null)
-//            queryWrapper.like("product_category_id", productCategoryId);
-//        if (brandId != null)
-//            queryWrapper.like("brand_id", brandId);
-//        return new ResponseResult<>(200, "查询成功", productService.page(new Page<>(pageNum, pageSize), queryWrapper));
+//        return new ResponseResult(200, "查询成功",
+//                productService.page(keyword, publishStatus, verifyStatus, productSn, productCategoryId, brandId, pageNum, pageSize));
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        if (!StringUtils.isEmpty(keyword))
+            queryWrapper.like("name", keyword);
+        if (publishStatus != null)
+            queryWrapper.like("publish_status", publishStatus);
+        if (verifyStatus != null)
+            queryWrapper.like("verify_status", verifyStatus);
+        if (!StringUtils.isEmpty(productSn))
+            queryWrapper.like("product_sn", productSn);
+        if (productCategoryId != null)
+            queryWrapper.like("product_category_id", productCategoryId);
+        if (brandId != null)
+            queryWrapper.like("brand_id", brandId);
+        return new ResponseResult<>(200, "查询成功", productService.page(new Page<>(pageNum, pageSize), queryWrapper));
 
     }
 
